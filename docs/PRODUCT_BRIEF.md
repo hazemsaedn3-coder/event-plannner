@@ -79,7 +79,7 @@ These were unspecified in discovery. Each is easy to change.
 - `hostKey`, `pin` and the guest list are **never** sent to the browser. Templates receive a public `InvitationView` projection.
 - PIN cookie: HMAC(`MABROUK_SECRET`, slug:pin), httpOnly, ~8 months. Changing the PIN invalidates old cookies. A wrong PIN costs a 600 ms delay.
 - POST APIs reject cross-origin requests (Origin check). CSV export is protected against formula injection and includes a UTF-8 BOM so Arabic opens correctly in Excel.
-- Supabase: Row Level Security is on with no policies; the server uses the service-role key. RSVP rows dedupe via `dedupe_key`.
+- Supabase: Row Level Security is on with no policies and table grants are revoked, so the public API can't touch the tables. The server calls five `SECURITY DEFINER` functions (`mabrouk_*`) with the publishable key plus a server-only secret (`MABROUK_DB_SECRET`, stored in `private.settings`). Without the secret, every call is rejected. Seat limits are re-checked inside the database. RSVP rows dedupe via `dedupe_key`.
 - No rate limiting yet (acceptable at launch volume; add Vercel WAF or Upstash if abused).
 
 ### Performance (measured on the demo, 375px)
@@ -113,7 +113,7 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
 - [ ] Check that the **Mabrouk domain** and **Instagram / TikTok handles** are available; update `src/config/site.ts` (handles are placeholders).
 - [ ] Put the **real WhatsApp number** in `siteConfig.whatsappNumber` (currently `201000000000`).
 - [ ] Background music must be **royalty-free**. The built-in synth is safe; any uploaded track needs a licence you keep on file.
-- [ ] Set `NEXT_PUBLIC_SITE_URL` and a long random `MABROUK_SECRET` on Vercel.
-- [ ] Create the Supabase project, run `supabase/schema.sql`, and set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Without them, production RSVPs go to `/tmp` on Vercel, which is ephemeral; the host dashboard shows a warning.
+- [x] Supabase project `mabrouk` (Frankfurt, `jfxodiefxspynlprzofb`) created and schema applied (Oct 2026).
+- [ ] Vercel project: import the repo with root directory `mabrouk` and set `SUPABASE_URL`, `SUPABASE_KEY`, `MABROUK_DB_SECRET`, `MABROUK_SECRET` (and `NEXT_PUBLIC_SITE_URL` once a domain exists). Without the Supabase variables, production RSVPs go to `/tmp` on Vercel, which is ephemeral; the host dashboard shows a warning.
 - [ ] Decide the payment method for customers outside Egypt.
 - [ ] Record the Reels: open `/i/omar-laila` on a phone, screen-record the tap → seal → letter → names sequence in each theme.
