@@ -1,8 +1,9 @@
-import type { CSSProperties, ReactNode } from "react";
+import { Suspense, type CSSProperties, type ReactNode } from "react";
 import { t } from "@/lib/i18n";
-import type { L10n, Locale, ThemeId } from "@/lib/types";
-import { ArchFrame, Divider, Star8 } from "@/templates/noor/v1/Ornaments";
+import type { L10n, Locale } from "@/lib/types";
+import { Divider, Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
+import { CatalogGallery, GallerySkeleton } from "./CatalogGallery";
 import { copy, DEMO_SLUGS, orderUrl } from "./copy";
 
 /** The marketing site. Server-rendered and fully static; the only JS on the page is the iframe. */
@@ -76,7 +77,7 @@ export function Landing({ locale }: { locale: Locale }) {
         </section>
 
         {/* How it works */}
-        <section className="mx-auto max-w-6xl px-5 py-16">
+        <section className="reveal mx-auto max-w-6xl px-5 py-16">
           <SectionTitle>{tr(c.how.title)}</SectionTitle>
           <ol className="grid gap-5 md:grid-cols-3">
             {c.how.steps.map((s, i) => (
@@ -99,39 +100,18 @@ export function Landing({ locale }: { locale: Locale }) {
           </ul>
         </section>
 
-        {/* Designs */}
-        <section id="designs" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-16">
-          <SectionTitle sub={tr(c.designs.body)}>{tr(c.designs.title)}</SectionTitle>
-          <div className="grid gap-6 md:grid-cols-3">
-            {(Object.keys(DEMO_SLUGS) as ThemeId[]).map((id) => {
-              const theme = noorThemes[id];
-              const designName = `${tr(c.designs.templateName)} — ${tr(theme.name)}`;
-              return (
-                <article key={id} className="flex flex-col items-center">
-                  <a href={`/i/${DEMO_SLUGS[id]}`} target="_blank" className="block w-full max-w-[320px]" aria-label={`${tr(c.designs.live)}: ${designName}`}>
-                    <ThemePoster themeId={id} locale={locale} />
-                  </a>
-                  <h3 className="f-display mt-5 text-[24px]">{designName}</h3>
-                  <div className="mt-3 flex flex-wrap justify-center gap-2">
-                    <a
-                      href={`/i/${DEMO_SLUGS[id]}`}
-                      target="_blank"
-                      className="f-body rounded-full border border-[var(--line)] px-5 py-2.5 text-[15px]"
-                    >
-                      {tr(c.designs.live)}
-                    </a>
-                    <WhatsAppButton href={orderUrl(locale, designName)} small>
-                      {tr(c.designs.order)}
-                    </WhatsAppButton>
-                  </div>
-                </article>
-              );
-            })}
+        {/* Designs (live catalog, managed in /admin) */}
+        <section id="designs" className="reveal mx-auto max-w-6xl scroll-mt-20 py-16">
+          <div className="px-5">
+            <SectionTitle sub={tr(c.designs.body)}>{tr(c.designs.title)}</SectionTitle>
           </div>
+          <Suspense fallback={<GallerySkeleton />}>
+            <CatalogGallery locale={locale} />
+          </Suspense>
         </section>
 
         {/* Pricing */}
-        <section id="pricing" className="mx-auto max-w-4xl scroll-mt-20 px-5 py-16">
+        <section id="pricing" className="reveal mx-auto max-w-4xl scroll-mt-20 px-5 py-16">
           <SectionTitle>{tr(c.pricing.title)}</SectionTitle>
           <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
             <div className="rounded-[26px] border border-[var(--accent)] bg-[var(--surface)] p-8 text-center shadow-[0_20px_50px_-30px_rgba(58,46,34,0.45)]">
@@ -179,7 +159,7 @@ export function Landing({ locale }: { locale: Locale }) {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="mx-auto max-w-3xl scroll-mt-20 px-5 py-16">
+        <section id="faq" className="reveal mx-auto max-w-3xl scroll-mt-20 px-5 py-16">
           <SectionTitle>{tr(c.faq.title)}</SectionTitle>
           <div className="flex flex-col gap-3">
             {c.faq.items.map((item, i) => (
@@ -263,37 +243,6 @@ function PhoneFrame({ src, title }: { src: string; title: string }) {
           height={812}
           className="origin-top-left border-0 rtl:origin-top-right"
           style={{ transform: `scale(${scale})`, width: 375, height: 812 }}
-        />
-      </div>
-    </div>
-  );
-}
-
-/** Static mini poster of a theme (no iframe, so the gallery stays light). */
-function ThemePoster({ themeId, locale }: { themeId: ThemeId; locale: Locale }) {
-  const theme = noorThemes[themeId];
-  return (
-    <div
-      lang={locale}
-      className="noor-bg relative aspect-[3/4] overflow-hidden rounded-[28px] border border-[var(--line)] text-[var(--ink)] shadow-[0_30px_60px_-35px_rgba(0,0,0,0.5)] transition hover:-translate-y-1"
-      style={themeStyle(theme) as CSSProperties}
-    >
-      <div className="noor-pattern absolute inset-0" aria-hidden />
-      <ArchFrame className="absolute inset-x-6 top-6 bottom-6 h-[calc(100%-3rem)] w-[calc(100%-3rem)]" />
-      <div className="relative flex h-full flex-col items-center justify-center px-10 text-center">
-        <Star8 size={16} className="text-[var(--accent)]" />
-        <p className="f-names mt-4 text-[44px] leading-[1.1]">{locale === "ar" ? "عمر" : "Omar"}</p>
-        <p className="f-names text-[26px] leading-none text-[var(--accent)]">{locale === "ar" ? "و" : "&"}</p>
-        <p className="f-names text-[44px] leading-[1.1]">{locale === "ar" ? "ليلى" : "Laila"}</p>
-        <Divider className="mt-5" />
-        <p className="f-display mt-3 text-[18px] tracking-[0.15em]" dir="ltr">
-          17 · 06 · 2027
-        </p>
-        {/* wax seal accent */}
-        <span
-          className="mt-6 block h-10 w-10 rounded-full shadow-md"
-          style={{ background: `radial-gradient(circle at 35% 30%, ${theme.colors.seal}, ${theme.colors.sealDark})` }}
-          aria-hidden
         />
       </div>
     </div>

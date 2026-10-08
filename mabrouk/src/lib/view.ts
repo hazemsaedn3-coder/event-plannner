@@ -66,7 +66,19 @@ export interface InvitationView {
   dressCode?: L10n;
   gifts?: { message: L10n; accounts?: GiftAccount[] };
   gallery?: GalleryImage[];
-  music: { src?: string };
+  /**
+   * Music source. `external: true` means a host page (the template demo
+   * player) controls audio, so the template hides its own music button.
+   */
+  music: { src?: string; external?: boolean };
+  /** Full color override (catalog templates with custom colors). */
+  themeColors?: Record<
+    | "bg" | "bg2" | "surface" | "ink" | "inkSoft" | "accent" | "accentSoft" | "line"
+    | "envelope" | "envelopeFront" | "card" | "cardInk" | "seal" | "sealDark" | "sealInk",
+    string
+  >;
+  /** Optional couple photo shown inside the hero arch. */
+  heroImage?: string;
 
   rsvp: {
     enabled: boolean;

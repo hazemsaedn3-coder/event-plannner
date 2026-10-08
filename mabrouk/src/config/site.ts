@@ -17,10 +17,10 @@ export const siteConfig = {
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : "http://localhost:3000"),
   /**
-   * TODO(before launch): replace with the real WhatsApp Business number.
+   * Orders WhatsApp number (wa.me/201500554524).
    * International format, digits only (no +, no spaces). 20 = Egypt.
    */
-  whatsappNumber: "201000000000",
+  whatsappNumber: "201500554524",
   instagram: "https://instagram.com/mabrouk.invites", // placeholder handle
   tiktok: "https://tiktok.com/@mabrouk.invites", // placeholder handle
   /** Operations defaults (see docs/PRODUCT_BRIEF.md). */

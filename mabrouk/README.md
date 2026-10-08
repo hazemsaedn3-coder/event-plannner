@@ -19,6 +19,10 @@ npm run lint
 | `/host/[slug]?key=…` | Host dashboard: RSVPs, totals, CSV, one-tap WhatsApp per guest (`&lang=en` for English) |
 | `POST /api/rsvp` · `POST /api/view` · `POST /api/unlock` | RSVP, open tracking, PIN gate |
 | `GET /api/host/[slug]/rsvps?key=…` | CSV export |
+| `/demo/[id]` | Shareable live demo of a catalog template (music dock, share, WhatsApp order) |
+| `/p/[token]` | Personalised client preview link |
+| `/admin` | Admin panel (login: see docs/PRODUCT_BRIEF.md §8): templates, import, music & images, client links |
+| `/media/[id]` | Uploaded audio/images (range requests, immutable cache) |
 
 Demo: `/i/omar-laila` (+ `-emerald`, `-blush`). Host: `/host/omar-laila?key=demo-host-9nr3ue8s7wd8pgfb`.
 GCC sample with PIN `2468`: `/i/faisal-noura-wqhmh7ju/pfnf8smd` (men's list) and `/5surrg5v` (women's list).
@@ -34,7 +38,10 @@ src/
   templates/registry.ts           ← { templateId → versions }; invitations pin a version
   templates/noor/v1/              ← the Noor template + its 3 themes
   storage/                        ← adapter: local JSON (.data/) or Supabase
-supabase/schema.sql
+supabase/schema.sql               ← invitations, RSVPs, views
+supabase/catalog.sql              ← template catalog, media, client links
+src/catalog/                      ← catalog types, storage, rendering, import
+src/app/(admin)/                  ← admin panel (protected by src/proxy.ts)
 scripts/new-codes.mjs             ← slug / host key / guest codes
 assets/fonts/                     ← TTFs for OpenGraph images
 ```

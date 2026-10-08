@@ -117,3 +117,29 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
 - [ ] Vercel project: import the repo with root directory `mabrouk` and set `SUPABASE_URL`, `SUPABASE_KEY`, `MABROUK_DB_SECRET`, `MABROUK_SECRET` (and `NEXT_PUBLIC_SITE_URL` once a domain exists). Without the Supabase variables, production RSVPs go to `/tmp` on Vercel, which is ephemeral; the host dashboard shows a warning.
 - [ ] Decide the payment method for customers outside Egypt.
 - [ ] Record the Reels: open `/i/omar-laila` on a phone, screen-record the tap → seal → letter → names sequence in each theme.
+
+---
+
+## 8. Template catalog + admin panel (added October 2026)
+
+**Customer side**
+- Landing gallery (`/#designs`, `/en#designs`) lists every *published* catalog template. It's a swipeable carousel on phones and a grid on desktop. Each card has a vector or uploaded thumbnail, a **Live demo** button, an **order on WhatsApp** button that names the design, and a **Share** button.
+- Live demo at **`/demo/<template-id>`**: a shareable, indexable link. A floating dock gives **play / pause, mute, a track selector**, a share sheet (copy link, WhatsApp, native share) and the WhatsApp order button. Music starts on the first tap (browsers block autoplay).
+- Personal client links at **`/p/<token>`** can override names/date (Noor) or texts (HTML), show a "Private preview for …" banner, and are never indexed.
+- Orders go to WhatsApp **+20 150 055 4524** (`siteConfig.whatsappNumber`).
+
+**Admin panel** (`/admin`)
+- Login with the static credentials from the brief (`tahahazem` / `hazemtaha`). Override them with the `ADMIN_USERNAME` / `ADMIN_PASSWORD` env vars. The session is a signed, httpOnly cookie (7 days). `src/proxy.ts` blocks `/admin/*` and `/api/admin/*` without it, and every page/action/route checks again.
+- Templates: create (Noor engine or HTML), edit, duplicate, publish/unpublish, delete, export JSON.
+  - **Noor templates**: bilingual texts, names, date/time zone, venue, map, dress code, hero photo, gallery, preset theme or five custom colors.
+  - **HTML templates**: HTML/CSS/JS editors, `{{key}}` text variables, colors exposed as CSS variables (`--mbk-background`, `--mbk-surface`, `--mbk-text`, `--mbk-accent`, `--mbk-seal`).
+- Import: upload `.json` (Mabrouk export) or `.html` (+ `.css`/`.js`), or a URL (server-side fetch: 2 MB cap, 10 s timeout, private/loopback addresses blocked). Imports arrive as drafts.
+- Music & images: upload MP3/M4A/OGG/WAV or JPG/PNG/WebP/SVG (≤ 4 MB, Vercel's request limit). Per template: pick tracks + default. The built-in synthesized "Mabrouk Music Box" is always available.
+- Client links: created from the template editor, each with a copy button and a one-tap WhatsApp send.
+
+**Defaults / decisions**
+- Catalog data lives in Supabase (`supabase/catalog.sql`: `showcase_templates`, `media`, `preview_links`) behind the same secret-gated functions as the rest. Files are stored in Postgres (`bytea`), uploaded in 1 MB chunks, and served from `/media/<id>` with year-long immutable caching and byte-range support (required for iPhone audio). Move to Supabase Storage/Vercel Blob if the library grows past a few hundred MB.
+- Imported HTML runs in an iframe sandbox **without** `allow-same-origin`, so it can't read cookies, the admin session or the parent page. Uploaded SVGs are served with a sandboxing CSP.
+- Public catalog reads are cached and tagged `catalog`; every admin change refreshes them immediately.
+- The default catalog (3 Noor themes + "Lumière" HTML save-the-date) is seeded once on first read.
+- The admin UI is in English; customer-facing pages stay Arabic-first and bilingual.

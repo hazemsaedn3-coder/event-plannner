@@ -97,10 +97,13 @@ export function copy(l: Locale) {
     designs: {
       title: { ar: "التصاميم", en: "Designs" },
       body: {
-        ar: "تصميم «نور» بثلاث ألوان. جميل بدون صور، ويمكن إضافة صوركم إن رغبتم.",
-        en: "The “Noor” design in three colourways. Beautiful without photos; add yours if you like.",
+        ar: "اضغط على أي تصميم لتجربته مباشرة على موبايلك، مع الموسيقى. جميل بدون صور، ويمكن إضافة صوركم إن رغبتم.",
+        en: "Tap any design to try it live on your phone, music included. Beautiful without photos; add yours if you like.",
       },
       live: { ar: "عرض حي", en: "Live demo" },
+      share: { ar: "مشاركة", en: "Share" },
+      copied: { ar: "تم نسخ الرابط", en: "Link copied" },
+      empty: { ar: "تصاميم جديدة قريباً", en: "New designs coming soon" },
       order: { ar: "اطلب هذا التصميم", en: "Order this design" },
       templateName: { ar: "نور", en: "Noor" },
     },

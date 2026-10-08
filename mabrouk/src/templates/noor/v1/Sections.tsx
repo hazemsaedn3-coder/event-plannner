@@ -94,6 +94,15 @@ export function Hero({ view, revealed }: { view: InvitationView; revealed: boole
               {tr(view.opening)}
             </m.p>
           )}
+          {view.heroImage && (
+            <m.div
+              {...show(0.3)}
+              className="mt-5 h-40 w-32 overflow-hidden rounded-t-full rounded-b-[14px] border border-[var(--line)] p-1"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={view.heroImage} alt="" className="h-full w-full rounded-t-full rounded-b-[10px] object-cover" />
+            </m.div>
+          )}
           <m.p {...show(0.35)} className="f-body mt-5 max-w-[290px] text-[15px] leading-relaxed text-[var(--ink-soft)]">
             {tr(view.hostsLine)}
           </m.p>
@@ -400,7 +409,7 @@ export function Gallery({ view }: { view: InvitationView }) {
             key={img.src}
             className="relative aspect-[3/4] w-[72vw] max-w-[300px] shrink-0 snap-center overflow-hidden rounded-t-full rounded-b-[18px] border border-[var(--line)]"
           >
-            <Image src={img.src} alt={tr(img.alt)} fill sizes="72vw" className="object-cover" loading="lazy" />
+            <Image src={img.src} alt={tr(img.alt)} fill sizes="72vw" className="object-cover" loading="lazy" unoptimized />
           </div>
         ))}
       </div>

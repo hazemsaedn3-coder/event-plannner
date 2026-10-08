@@ -11,6 +11,9 @@
 export interface MusicPlayer {
   play(): Promise<void>;
   pause(): void;
+  setMuted(muted: boolean): void;
+  /** Stop and release resources (used when switching tracks). */
+  dispose(): void;
   readonly playing: boolean;
 }
 
@@ -34,6 +37,16 @@ class FilePlayer implements MusicPlayer {
     this.audio.pause();
     this.playing = false;
   }
+
+  setMuted(muted: boolean) {
+    this.audio.muted = muted;
+  }
+
+  dispose() {
+    this.pause();
+    this.audio.removeAttribute("src");
+    this.audio.load();
+  }
 }
 
 /* --------------------------- Music box synth --------------------------- */
@@ -55,6 +68,7 @@ class MusicBoxPlayer implements MusicPlayer {
   private master!: GainNode;
   private bus!: GainNode;
   private timer: number | undefined;
+  private muted = false;
   private nextTime = 0;
   private step = 0;
   playing = false;
@@ -133,7 +147,7 @@ class MusicBoxPlayer implements MusicPlayer {
     await ctx.resume();
     this.nextTime = Math.max(this.nextTime, ctx.currentTime + 0.05);
     this.master.gain.cancelScheduledValues(ctx.currentTime);
-    this.master.gain.setTargetAtTime(0.55, ctx.currentTime, 0.6);
+    this.master.gain.setTargetAtTime(this.muted ? 0 : 0.55, ctx.currentTime, 0.6);
     this.schedule();
     window.clearInterval(this.timer);
     this.timer = window.setInterval(this.schedule, 150);
@@ -149,6 +163,18 @@ class MusicBoxPlayer implements MusicPlayer {
       if (!this.playing) void ctx.suspend();
     }, 600);
     this.playing = false;
+  }
+
+  setMuted(muted: boolean) {
+    this.muted = muted;
+    if (this.ctx && this.playing) this.master.gain.setTargetAtTime(muted ? 0 : 0.55, this.ctx.currentTime, 0.1);
+  }
+
+  dispose() {
+    this.pause();
+    const ctx = this.ctx;
+    this.ctx = null;
+    if (ctx) window.setTimeout(() => void ctx.close(), 700);
   }
 }
 

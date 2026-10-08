@@ -18,7 +18,9 @@ import { noorThemes, themeStyle } from "./themes";
  * Pinned by invitations as { templateId: "noor", templateVersion: 1 }.
  */
 export default function NoorInvitation({ view }: { view: InvitationView }) {
-  const theme = noorThemes[view.themeId];
+  const preset = noorThemes[view.themeId];
+  const theme = view.themeColors ? { ...preset, colors: view.themeColors } : preset;
+  const externalMusic = Boolean(view.music.external);
   const [locale, setLocale] = useState<Locale>(view.initialLocale);
   const [stage, setStage] = useState<"sealed" | "opening" | "open">("sealed");
   const [playing, setPlaying] = useState(false);
@@ -69,11 +71,13 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
     }
   }, [startMusic]);
 
+  const slug = view.slug;
+  const guestCode = view.guest?.code;
   const onOpen = useCallback(() => {
     setStage("opening");
-    void startMusic();
+    if (!externalMusic) void startMusic();
     // Count the open for the host dashboard (fire-and-forget).
-    const body = JSON.stringify({ slug: view.slug, guestCode: view.guest?.code, locale });
+    const body = JSON.stringify({ slug, guestCode, locale });
     try {
       if (!navigator.sendBeacon?.("/api/view", new Blob([body], { type: "application/json" }))) {
         void fetch("/api/view", { method: "POST", body, keepalive: true, headers: { "Content-Type": "application/json" } });
@@ -81,9 +85,9 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
     } catch {
       /* analytics must never break the invitation */
     }
-  }, [startMusic, view.slug, view.guest?.code, locale]);
+  }, [setStage, startMusic, externalMusic, slug, guestCode, locale]);
 
-  const ctx = useMemo(() => ({ locale, setLocale, tr: (text: L10n) => t(text, locale) }), [locale]);
+  const ctx = useMemo(() => ({ locale, setLocale, tr: (text: L10n) => t(text, locale) }), [locale, setLocale]);
 
   return (
     <LocaleContext.Provider value={ctx}>
@@ -98,6 +102,7 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
             <div className="noor-pattern pointer-events-none fixed inset-0" aria-hidden />
 
             <Controls
+              showMusic={!externalMusic}
               playing={playing}
               onToggleMusic={toggleMusic}
               locale={locale}
@@ -126,11 +131,13 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
 }
 
 function Controls({
+  showMusic,
   playing,
   onToggleMusic,
   locale,
   onToggleLocale,
 }: {
+  showMusic: boolean;
   playing: boolean;
   onToggleMusic: () => void;
   locale: Locale;
@@ -140,15 +147,19 @@ function Controls({
     "flex h-11 min-w-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--surface)]/85 text-[var(--accent)] shadow-sm backdrop-blur-md transition active:scale-95";
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-between p-3.5">
-      <button
-        type="button"
-        className={`${btn} pointer-events-auto`}
-        onClick={onToggleMusic}
-        aria-pressed={playing}
-        aria-label={t(ui.music, locale)}
-      >
-        {playing ? <Bars /> : <Icon name="music-off" className="h-5 w-5" />}
-      </button>
+      {showMusic ? (
+        <button
+          type="button"
+          className={`${btn} pointer-events-auto`}
+          onClick={onToggleMusic}
+          aria-pressed={playing}
+          aria-label={t(ui.music, locale)}
+        >
+          {playing ? <Bars /> : <Icon name="music-off" className="h-5 w-5" />}
+        </button>
+      ) : (
+        <span />
+      )}
       <button
         type="button"
         className={`${btn} pointer-events-auto px-4 text-[14px] ${locale === "ar" ? "font-[family-name:var(--font-cormorant)]" : "font-[family-name:var(--font-amiri)]"}`}
