@@ -46,6 +46,12 @@ export async function logout() {
 /* Templates                                                           */
 /* ------------------------------------------------------------------ */
 
+/** Clears the cached catalog (e.g. after a direct database change). */
+export async function refreshCatalog() {
+  await requireAdmin();
+  updateTag(CATALOG_TAG);
+}
+
 export async function createTemplate(kind: "noor" | "html" | "duo" | "layali") {
   await requireAdmin();
   const t = blankTemplate(kind, `${kind === "html" ? "design" : kind === "duo" ? "farah" : kind}-${newId(3)}`);

@@ -6,7 +6,7 @@ import { CopyLink } from "@/components/invite/CopyLink";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { absoluteUrl } from "@/config/site";
 import { requireAdmin } from "@/lib/admin-auth";
-import { createTemplate, deleteTemplate, duplicateTemplate, setTemplateStatus } from "../actions";
+import { createTemplate, deleteTemplate, refreshCatalog, duplicateTemplate, setTemplateStatus } from "../actions";
 
 async function Templates() {
   await requireAdmin();
@@ -32,6 +32,11 @@ async function Templates() {
           </form>
           <form action={createTemplate.bind(null, "duo")}>
             <button className="rounded-full border border-[#D9C9A8] bg-white px-4 py-2 text-[14px] hover:border-[#B08A45]">+ New bride/groom design</button>
+          </form>
+          <form action={refreshCatalog}>
+            <button className="rounded-full border border-[#D9C9A8] bg-white px-4 py-2 text-[14px] hover:border-[#B08A45]" title="Reload the designs from the database">
+              ↻ Refresh catalog
+            </button>
           </form>
           <form action={createTemplate.bind(null, "html")}>
             <button className="rounded-full border border-[#D9C9A8] bg-white px-4 py-2 text-[14px] hover:border-[#B08A45]">+ New HTML design</button>
