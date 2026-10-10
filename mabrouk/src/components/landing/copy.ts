@@ -1,4 +1,3 @@
-import { addOnLabels, formatPrice, pricing, type AddOnId } from "@/config/pricing";
 import { siteConfig } from "@/config/site";
 import { whatsappUrl } from "@/lib/links";
 import type { L10n, Locale, ThemeId } from "@/lib/types";
@@ -26,15 +25,10 @@ const ops = siteConfig.operations;
 const n = (x: number, l: Locale) => (l === "ar" ? x.toLocaleString("ar-EG") : String(x));
 
 export function copy(l: Locale) {
-  const price = (p: { EGP: number; USD: number }) => ({
-    egp: formatPrice(p.EGP, "EGP", l),
-    usd: formatPrice(p.USD, "USD", l),
-  });
-
   return {
     nav: {
       designs: { ar: "التصاميم", en: "Designs" },
-      pricing: { ar: "الأسعار", en: "Pricing" },
+      pricing: { ar: "الباقة", en: "What's included" },
       faq: { ar: "الأسئلة", en: "FAQ" },
       switchLang: { ar: "English", en: "عربي" },
       order: { ar: "اطلب الآن", en: "Order" },
@@ -53,8 +47,8 @@ export function copy(l: Locale) {
       chat: { ar: "كلّمنا على واتساب", en: "Chat on WhatsApp" },
       demo: { ar: "شاهد دعوة تجريبية", en: "Open a live demo" },
       from: {
-        ar: `بـ ${price(pricing.base).egp} فقط`,
-        en: `Only ${price(pricing.base).egp} in Egypt · ${price(pricing.base).usd} elsewhere`,
+        ar: "اسألنا على واتساب عن السعر والعروض",
+        en: "Ask us on WhatsApp for prices and offers",
       },
       tryIt: { ar: "جرّبها: اضغط على الظرف", en: "Try it: tap the envelope" },
     },
@@ -124,6 +118,8 @@ export function copy(l: Locale) {
       groups: {
         all: { ar: "الكل", en: "All" },
         layali: { ar: "سينمائي", en: "Cinematic" },
+        khaliji: { ar: "خليجي", en: "Khaliji" },
+        saeedi: { ar: "صعيدي", en: "Saeedi" },
         duo: { ar: "صحاب العروسة والعريس", en: "Two entrances" },
         noor: { ar: "كلاسيك", en: "Classic" },
         html: { ar: "بطاقات", en: "Cards" },
@@ -131,29 +127,28 @@ export function copy(l: Locale) {
       templateName: { ar: "نور", en: "Noor" },
     },
     pricing: {
-      title: { ar: "الأسعار", en: "Pricing" },
+      title: { ar: "كل ده في دعوتكم", en: "Everything in your invitation" },
       plan: { ar: "دعوة كاملة", en: "Complete invitation" },
-      egypt: { ar: "داخل مصر", en: "In Egypt" },
-      abroad: { ar: "خارج مصر", en: "Outside Egypt" },
-      base: price(pricing.base),
       includes: [
         { ar: `تسليم خلال ${n(ops.deliveryHours, "ar")} ساعة`, en: `Delivered within ${ops.deliveryHours} hours` },
         { ar: `${n(ops.includedRevisions, "ar")} جولة تعديلات`, en: `${ops.includedRevisions} revision rounds` },
         { ar: "كل المناسبات: خطوبة، كتب كتاب، حنة، فرح", en: "All events: engagement, Katb el-Kitab, henna, wedding" },
-        { ar: "تأكيد حضور + لوحة متابعة + تصدير Excel", en: "RSVP + host dashboard + CSV export" },
+        { ar: "تأكيد حضور + صفحة نتائج خاصة بيكم + تصدير Excel", en: "RSVP + your private results page + Excel export" },
         {
           ar: `الرابط يعمل حتى ${n(ops.liveMonthsAfterWedding, "ar")} أشهر بعد الفرح`,
           en: `Link stays live ${ops.liveMonthsAfterWedding} months after the wedding`,
         },
       ] satisfies L10n[],
-      addOnsTitle: { ar: "إضافات", en: "Add-ons" },
-      addOns: (Object.keys(pricing.addOns) as AddOnId[]).map((id) => ({
-        label: addOnLabels[id],
-        ...price(pricing.addOns[id]),
-      })),
+      addOnsTitle: { ar: "إضافات حسب طلبك", en: "Optional extras" },
+      addOns: [
+        { ar: "روابط شخصية لكل ضيف", en: "Personal guest links" },
+        { ar: "تسليم مستعجل خلال ٢٤ ساعة", en: "24-hour rush delivery" },
+        { ar: "أغنية أو صوت خاص بيكم", en: "Your own song or voice message" },
+      ] satisfies L10n[],
+      ask: { ar: "اسأل عن السعر على واتساب", en: "Ask for the price on WhatsApp" },
       payment: {
-        ar: "الدفع عبر إنستاباي أو فودافون كاش. ونرسل لكم طرق الدفع من خارج مصر على واتساب.",
-        en: "Pay via InstaPay or Vodafone Cash. Outside Egypt, we'll share payment options on WhatsApp.",
+        ar: "ابعتلنا على واتساب ونرد عليك بالسعر والعروض المتاحة وطرق الدفع.",
+        en: "Message us on WhatsApp and we'll reply with prices, current offers and payment options.",
       },
     },
     faq: {
@@ -176,8 +171,8 @@ export function copy(l: Locale) {
         {
           q: { ar: "ما هي الروابط الشخصية للضيوف؟", en: "What are personal guest links?" },
           a: {
-            ar: `كل ضيف يأخذ رابطاً باسمه («إلى أحمد وعائلته») مع عدد مقاعد محدد، وترسلونه بضغطة من لوحة التحكم. (+${pricing.addOns.guestLinks.EGP.toLocaleString("ar-EG")} جنيه)`,
-            en: `Each guest gets a link with their name (“Dear Ahmed & Family”) and a seat limit, sent in one tap from your dashboard. (+${pricing.addOns.guestLinks.EGP} EGP / +$${pricing.addOns.guestLinks.USD})`,
+            ar: `كل ضيف يأخذ رابطاً باسمه («إلى أحمد وعائلته») مع عدد مقاعد محدد، وترسلونه بضغطة من لوحة التحكم.`,
+            en: `Each guest gets a link with their name (“Dear Ahmed & Family”) and a seat limit, sent in one tap from your dashboard.`,
           },
         },
         {
@@ -197,8 +192,8 @@ export function copy(l: Locale) {
         {
           q: { ar: "ماذا لو أردنا تعديل شيء؟", en: "What if we want changes?" },
           a: {
-            ar: `السعر يشمل ${n(ops.includedRevisions, "ar")} جولة تعديلات. وكل جولة إضافية بـ ${pricing.addOns.extraRevision.EGP.toLocaleString("ar-EG")} جنيه.`,
-            en: `${ops.includedRevisions} revision rounds are included. Each extra round is ${pricing.addOns.extraRevision.EGP} EGP.`,
+            ar: `الطلب يشمل ${n(ops.includedRevisions, "ar")} جولة تعديلات، ولو احتجت أكتر كلمنا على واتساب.`,
+            en: `${ops.includedRevisions} revision rounds are included. Need more? Just message us on WhatsApp.`,
           },
         },
         {

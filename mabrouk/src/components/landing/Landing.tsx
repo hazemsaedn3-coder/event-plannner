@@ -172,17 +172,6 @@ export function Landing({ locale }: { locale: Locale }) {
           <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
             <div className="rounded-[26px] border border-[var(--accent)] bg-[var(--surface)] p-8 text-center shadow-[0_20px_50px_-30px_rgba(58,46,34,0.45)]">
               <h3 className="f-display text-[26px]">{tr(c.pricing.plan)}</h3>
-              <div className="mt-5 flex items-end justify-center gap-6">
-                <div>
-                  <p className="f-display text-[42px] leading-none">{c.pricing.base.egp}</p>
-                  <p className="f-body mt-1 text-[14px] text-[var(--ink-soft)]">{tr(c.pricing.egypt)}</p>
-                </div>
-                <span className="mb-6 h-10 w-px bg-[var(--line)]" />
-                <div>
-                  <p className="f-display text-[42px] leading-none">{c.pricing.base.usd}</p>
-                  <p className="f-body mt-1 text-[14px] text-[var(--ink-soft)]">{tr(c.pricing.abroad)}</p>
-                </div>
-              </div>
               <ul className="f-body mt-7 space-y-2.5 text-start text-[16px]">
                 {c.pricing.includes.map((x, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -199,17 +188,16 @@ export function Landing({ locale }: { locale: Locale }) {
               <h3 className="f-display text-[22px]">{tr(c.pricing.addOnsTitle)}</h3>
               <ul className="f-body mt-4 divide-y divide-[var(--line)] text-[16px]">
                 {c.pricing.addOns.map((a, i) => (
-                  <li key={i} className="flex items-center justify-between gap-4 py-3">
-                    <span>{tr(a.label)}</span>
-                    <span className="shrink-0 text-end text-[14px] text-[var(--accent)]">
-                      +{a.egp}
-                      <br />
-                      <span className="text-[var(--ink-soft)]">+{a.usd}</span>
-                    </span>
+                  <li key={i} className="flex items-center gap-2 py-3">
+                    <Star8 size={12} className="shrink-0 text-[var(--accent)]" />
+                    {tr(a)}
                   </li>
                 ))}
               </ul>
               <p className="f-body mt-5 text-[14px] leading-relaxed text-[var(--ink-soft)]">{tr(c.pricing.payment)}</p>
+              <div className="mt-5">
+                <WhatsAppButton href={orderUrl(locale)}>{tr(c.pricing.ask)}</WhatsAppButton>
+              </div>
             </div>
           </div>
         </section>

@@ -18,7 +18,7 @@ async function MediaLibrary() {
     <>
       <h1 className="font-[family-name:var(--font-cormorant)] text-[34px] leading-tight">Music & images</h1>
       <p className="text-[14px] text-[#7A6A55]">
-        Upload background music (MP3/M4A, royalty-free only) and images (JPG/PNG/WebP). Max 4 MB per file. Then pick them in each template.
+        Upload songs, voice messages and background music (MP3/M4A, up to 12 MB) and images (JPG/PNG/WebP, up to 4 MB). Then pick them in each design or invitation under “Music”.
       </p>
       <div className="mt-5">
         <MediaUploader />

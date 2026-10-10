@@ -12,7 +12,7 @@ import { createMusicPlayer, type MusicPlayer } from "../../shared/music";
 import { InvitationSections } from "../../noor/v1/Body";
 import { DateParts, Dot } from "../../noor/v1/Ornaments";
 import { layaliLook, pageVars, type LayaliLook } from "./looks";
-import { EmbossedPaper, WaxSeal } from "./Paper";
+import { EmbossedPaper, RegionBand, WaxSeal } from "./Paper";
 
 type Stage = "sealed" | "breaking" | "opening" | "rising" | "zooming" | "open";
 
@@ -25,6 +25,7 @@ const S = {
 /* Deterministic particle layouts (same on server and client). */
 const DUST = Array.from({ length: 22 }, (_, i) => ({ left: (i * 37) % 100, size: 3 + (i % 4) * 2, delay: (i * 0.9) % 9, dur: 9 + (i % 5) * 2, dx: ((i % 7) - 3) * 14 }));
 const PETALS = Array.from({ length: 12 }, (_, i) => ({ left: (i * 23 + 7) % 100, delay: (i * 1.3) % 10, dur: 10 + (i % 4) * 3, dx: ((i % 5) - 2) * 40, scale: 0.7 + (i % 3) * 0.25 }));
+const SMOKE = Array.from({ length: 9 }, (_, i) => ({ left: (i * 31 + 6) % 92, size: 90 + (i % 4) * 30, delay: (i * 1.7) % 12, dur: 13 + (i % 4) * 3, dx: ((i % 5) - 2) * 30 }));
 const LANTERNS = Array.from({ length: 12 }, (_, i) => ({ left: (i * 29 + 5) % 96, top: (i * 41 + 8) % 80, size: 24 + (i % 4) * 18, delay: (i * 0.7) % 5, dur: 5 + (i % 3) * 2, dx: ((i % 5) - 2) * 10 }));
 
 function foilVars(l: LayaliLook): CSSProperties {
@@ -227,6 +228,11 @@ function EnvelopeScene({ look, view, stage, monogram, onOpen, uid }: { look: Lay
           <div className="absolute inset-0 z-20 overflow-hidden rounded-[inherit]" style={{ clipPath: POCKET_CLIP }}>
             <EmbossedPaper uid={`${uid}-pocket`} motif={look.motif} color={look.paper} />
           </div>
+          {look.band && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-[9%] z-20" style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))" }}>
+              <RegionBand uid={`${uid}-env`} band={look.band} height={26} />
+            </div>
+          )}
           {/* Foil line along the pocket edge */}
           <svg className="pointer-events-none absolute inset-0 z-20 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
             <defs>
@@ -330,10 +336,16 @@ function Card({ look, view, locale }: { look: LayaliLook; view: InvitationView; 
   const tr = (x: L10n) => t(x, locale);
   return (
     <div className="relative flex h-full flex-col items-center justify-center px-5 text-center" style={{ color: look.card.ink }}>
-      <div className="pointer-events-none absolute inset-2 rounded-[6px] border" style={{ borderColor: `${look.card.accent}88` }} />
-      <div className="pointer-events-none absolute inset-3.5 rounded-[4px] border" style={{ borderColor: `${look.card.accent}44` }} />
-      <p className="text-[12px]" style={{ color: look.card.accent, fontFamily: "var(--font-amiri), var(--font-cormorant), serif" }}>
-        {tr(S.invited)}
+      {look.band && (
+        <>
+          <RegionBand uid={`${view.slug}-card-t`} band={look.band} height={12} className="absolute inset-x-0 top-0" />
+          <RegionBand uid={`${view.slug}-card-b`} band={look.band} height={12} className="absolute inset-x-0 bottom-0" />
+        </>
+      )}
+      <div className="pointer-events-none absolute inset-2 rounded-[6px] border" style={{ borderColor: `${look.card.accent}88`, ...(look.band ? { top: 18, bottom: 18 } : {}) }} />
+      <div className="pointer-events-none absolute inset-3.5 rounded-[4px] border" style={{ borderColor: `${look.card.accent}44`, ...(look.band ? { top: 24, bottom: 24 } : {}) }} />
+      <p className="text-[13px]" style={{ color: look.card.accent, fontFamily: "var(--font-amiri), var(--font-cormorant), serif" }}>
+        {tr(look.invited ?? S.invited)}
       </p>
       <p className="mt-3 text-[34px] leading-[1.25]" style={{ fontFamily: "var(--f-names)" }}>
         {tr(view.partner1)}
@@ -361,6 +373,17 @@ function Particles({ look }: { look: LayaliLook }) {
       <>
         {PETALS.map((p, i) => (
           <span key={i} className="lyl-petal" style={{ left: `${p.left}%`, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`, scale: String(p.scale), "--dx": `${p.dx}px` } as CSSProperties} />
+        ))}
+      </>
+    );
+  if (look.particles === "incense")
+    return (
+      <>
+        {SMOKE.map((p, i) => (
+          <span key={i} className="lyl-smoke" style={{ left: `${p.left}%`, width: p.size, height: p.size * 1.6, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`, "--dx": `${p.dx}px` } as CSSProperties} />
+        ))}
+        {DUST.slice(0, 12).map((p, i) => (
+          <span key={`d${i}`} className="lyl-dust" style={{ left: `${p.left}%`, bottom: 0, width: p.size, height: p.size, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`, "--dx": `${p.dx}px` } as CSSProperties} />
         ))}
       </>
     );
@@ -417,6 +440,12 @@ function Hero({ view, look, photo, revealed }: { view: InvitationView; look: Lay
         <Particles look={look} />
       </div>
 
+      {look.band && (
+        <>
+          <RegionBand uid={`${view.slug}-hero-t`} band={look.band} height={20} className="absolute inset-x-0 top-0 z-[1]" />
+          <RegionBand uid={`${view.slug}-hero-b`} band={look.band} height={20} className="absolute inset-x-0 bottom-0 z-[1]" />
+        </>
+      )}
       {/* Foil frame */}
       <div className="pointer-events-none absolute inset-4 rounded-[28px] border" style={{ borderColor: `${look.foil[1]}66` }} />
       <div className="pointer-events-none absolute inset-6 rounded-[22px] border" style={{ borderColor: `${look.foil[1]}33` }} />

@@ -7,6 +7,12 @@
   background-clip: text;
   color: transparent;
   animation: lyl-foil 6s linear infinite;
+  /* Calligraphic swashes (e.g. Ruqaa س) reach past the line box; the
+     background must cover them or they vanish. */
+  padding-bottom: 0.3em;
+  margin-bottom: -0.3em;
+  padding-inline: 0.25em;
+  margin-inline: -0.25em;
 }
 @keyframes lyl-foil {
   to {
@@ -70,6 +76,30 @@
 }
 
 /* Particles */
+/* Bukhoor (incense) smoke: soft wisps rising and spreading. */
+.lyl-smoke {
+  position: absolute;
+  bottom: -12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 246, 225, 0.28), rgba(255, 246, 225, 0.08) 60%, transparent);
+  filter: blur(14px);
+  animation: lyl-smoke ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes lyl-smoke {
+  0% {
+    transform: translate(0, 0) scale(0.55);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(var(--dx, 0), -85vh) scale(1.7) rotate(18deg);
+    opacity: 0;
+  }
+}
+
 .lyl-dust {
   position: absolute;
   border-radius: 999px;
@@ -153,6 +183,7 @@
   .lyl-pulse,
   .lyl-kenburns,
   .lyl-dust,
+  .lyl-smoke,
   .lyl-petal,
   .lyl-lantern,
   .lyl-cue {

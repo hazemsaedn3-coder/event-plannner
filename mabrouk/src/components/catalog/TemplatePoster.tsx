@@ -5,7 +5,7 @@ import { ArchFrame, Divider, Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
 import "@/templates/duo/v1/duo.css";
 import { layaliLook } from "@/templates/layali/v1/looks";
-import { EmbossedPaper, WaxSeal } from "@/templates/layali/v1/Paper";
+import { EmbossedPaper, WaxSeal, RegionBand } from "@/templates/layali/v1/Paper";
 import { neonText, palette, romanceVars, shaabiVars } from "@/templates/duo/v1/palettes";
 
 type PosterTemplate = Pick<ShowcaseTemplate, "kind" | "thumbnail" | "colors" | "noor" | "duo" | "variables" | "name"> & Partial<Pick<ShowcaseTemplate, "layali" | "id">>;
@@ -198,6 +198,7 @@ function LayaliPoster({ template, locale, base }: { template: PosterTemplate; lo
   return (
     <div className={base} style={{ background: look.lining }}>
       <EmbossedPaper uid={`${uid}-p`} motif={look.motif} color={look.paper} scale={0.7} />
+      {look.band && <RegionBand uid={`${uid}-b`} band={look.band} height={18} className="absolute inset-x-0 bottom-[5%]" />}
       <div className="absolute inset-x-0 top-0 h-[56%]" style={{ clipPath: "polygon(0 0,100% 0,100% 62%,50% 100%,0 62%)", filter: "drop-shadow(0 8px 10px rgba(0,0,0,.45))" }}>
         <EmbossedPaper uid={`${uid}-f`} motif={look.motif} color={look.flap} scale={0.7} relief={4} />
       </div>

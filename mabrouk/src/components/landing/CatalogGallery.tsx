@@ -19,6 +19,8 @@ export async function CatalogGallery({ locale }: { locale: Locale }) {
 
   const groups = [
     { id: "layali", label: c.designs.groups.layali[locale] },
+    { id: "khaliji", label: c.designs.groups.khaliji[locale] },
+    { id: "saeedi", label: c.designs.groups.saeedi[locale] },
     { id: "duo", label: c.designs.groups.duo[locale] },
     { id: "noor", label: c.designs.groups.noor[locale] },
     { id: "html", label: c.designs.groups.html[locale] },
@@ -34,7 +36,7 @@ export async function CatalogGallery({ locale }: { locale: Locale }) {
         const url = absoluteUrl(demo);
         return {
           key: t.id,
-          group: t.kind,
+          group: t.kind === "layali" && (t.layali?.look === "khaliji" || t.layali?.look === "saeedi") ? t.layali.look : t.kind,
           node: (
             <article className="group flex h-full flex-col">
               <a href={demo} className="block transition duration-300 group-hover:-translate-y-1" aria-label={`${c.designs.live[locale]}: ${name}`}>

@@ -21,6 +21,8 @@ export interface CatalogStore {
   listMedia(): Promise<MediaMeta[]>;
   getMedia(id: string): Promise<{ meta: MediaMeta; data: Buffer } | null>;
   putMedia(meta: MediaMeta, data: Buffer): Promise<void>;
+  /** Adds the next piece of a file uploaded in several requests. */
+  appendMedia(id: string, data: Buffer): Promise<void>;
   deleteMedia(id: string): Promise<void>;
 
   listLinks(templateId?: string): Promise<PreviewLink[]>;
@@ -108,6 +110,12 @@ class LocalCatalogStore implements CatalogStore {
   async putMedia(meta: MediaMeta, data: Buffer) {
     await this.mutate((db) => void (db.media[meta.id] = { ...meta, data: data.toString("base64") }));
   }
+  async appendMedia(id: string, data: Buffer) {
+    await this.mutate((db) => {
+      const m = db.media[id];
+      if (m) m.data = Buffer.concat([Buffer.from(m.data, "base64"), data]).toString("base64");
+    });
+  }
   async deleteMedia(id: string) {
     await this.mutate((db) => void delete db.media[id]);
   }
@@ -189,6 +197,12 @@ class SupabaseCatalogStore implements CatalogStore {
     await this.rpc("catalog_put_media", { p_meta: meta, p_data: data.subarray(0, CHUNK).toString("base64") });
     for (let i = CHUNK; i < data.length; i += CHUNK) {
       await this.rpc("catalog_append_media", { p_id: meta.id, p_data: data.subarray(i, i + CHUNK).toString("base64") });
+    }
+  }
+  async appendMedia(id: string, data: Buffer) {
+    const CHUNK = 1024 * 1024;
+    for (let i = 0; i < data.length; i += CHUNK) {
+      await this.rpc("catalog_append_media", { p_id: id, p_data: data.subarray(i, i + CHUNK).toString("base64") });
     }
   }
   async deleteMedia(id: string) {

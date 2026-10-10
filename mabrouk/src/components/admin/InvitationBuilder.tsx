@@ -80,7 +80,8 @@ export function InvitationBuilder({
   }
 
   const couple = t.noor ? `${t.noor.partner1.ar} و${t.noor.partner2.ar}` : form.clientName;
-  const shareMsg = `${form.clientName ? `${form.clientName}، ` : ""}ألف مبروك 🤍\nدعوتكم جاهزة:\n${url}\n\nلوحة متابعة تأكيدات الحضور (خاصة بكم فقط):\n${hostUrl}`;
+  const shareMsg = `${form.clientName ? `${form.clientName}، ` : ""}ألف مبروك 🤍\nدعوتكم جاهزة:\n${url}\n\nصفحة النتائج (مين هيحضر، الاعتذارات والتهاني) خاصة بيكم بس:\n${hostUrl}`;
+  const resultsMsg = `${form.clientName ? `${form.clientName}، ` : ""}دي صفحة نتائج دعوتكم 📊\nهتلاقوا فيها مين أكد الحضور، الاعتذارات، وكل التهاني والرسائل أول بأول:\n${hostUrl}\n\n(الرابط ده خاص بيكم، ماتبعتوهوش للضيوف)`;
   const guestMsg = `يسعدنا دعوتكم لفرح ${couple} 💌\n${url}`;
 
   return (
@@ -248,13 +249,29 @@ export function InvitationBuilder({
               Guest message
             </a>
           </div>
-          <p className="mt-4 font-medium">Couple&apos;s RSVP dashboard (private)</p>
-          <p className="mt-1 flex items-center gap-2">
-            <span className="min-w-0 flex-1 truncate font-mono text-[12px]">{hostUrl}</span>
-            <button type="button" className="rounded-full border border-[#E1D5BE] px-2 py-1 text-[12px]" onClick={() => navigator.clipboard.writeText(hostUrl)}>
-              Copy
-            </button>
-          </p>
+          <div className="mt-4 rounded-2xl bg-[#FBF6EA] p-3 ring-1 ring-[#E7D3A6]">
+            <p className="font-medium">📊 Client results page (private)</p>
+            <p className="mt-0.5 text-[12px] text-[#7A6A55]">Who&apos;s attending, declines, wishes &amp; messages, opens. Live, with Excel export.</p>
+            <p className="mt-2 flex items-center gap-2">
+              <span className="min-w-0 flex-1 truncate font-mono text-[12px]">{hostUrl}</span>
+              <button type="button" className="rounded-full border border-[#E1D5BE] bg-white px-2 py-1 text-[12px]" onClick={() => navigator.clipboard.writeText(hostUrl)}>
+                Copy
+              </button>
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a href={hostUrl} target="_blank" rel="noopener noreferrer" className="rounded-full bg-[#2A2420] px-3 py-1.5 text-[12px] text-white">
+                Open results ↗
+              </a>
+              <a
+                href={`https://wa.me/${form.clientPhone}?text=${encodeURIComponent(resultsMsg)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`rounded-full bg-[#1f7a4d] px-3 py-1.5 text-[12px] font-medium text-white ${form.clientPhone ? "" : "pointer-events-none opacity-40"}`}
+              >
+                Send results link to client
+              </a>
+            </div>
+          </div>
           {order && (
             <p className="mt-4">
               <Link href={`/admin/orders/${order.id}`} className="text-[#B08A45] underline">

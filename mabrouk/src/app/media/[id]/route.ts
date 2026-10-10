@@ -6,6 +6,8 @@ import { getCatalogStore } from "@/catalog/store";
  * cached "forever" by browsers and the CDN. Supports Range requests
  * (Safari won't play audio without them).
  */
+const MAX_SLICE = 2 * 1024 * 1024;
+
 export async function GET(req: Request, ctx: RouteContext<"/media/[id]">) {
   const { id } = await ctx.params;
   if (!/^[a-z0-9]{6,40}$/.test(id)) return new Response("Not found", { status: 404 });
@@ -25,14 +27,16 @@ export async function GET(req: Request, ctx: RouteContext<"/media/[id]">) {
     "Content-Security-Policy": "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox",
   };
 
-  const range = req.headers.get("range");
+  // Files too big for one response are always answered in slices.
+  const range = req.headers.get("range") ?? (data.length > 2 * MAX_SLICE ? "bytes=0-" : null);
   const m = range?.match(/^bytes=(\d*)-(\d*)$/);
   if (m && (m[1] || m[2])) {
     const size = data.length;
     let start = m[1] ? Number(m[1]) : size - Number(m[2]);
     let end = m[1] && m[2] ? Number(m[2]) : size - 1;
     start = Math.max(0, start);
-    end = Math.min(size - 1, end);
+    // Vercel caps a response at 4.5 MB: serve long files in slices (media players ask for the rest).
+    end = Math.min(size - 1, end, start + MAX_SLICE - 1);
     if (start > end) {
       return new Response(null, { status: 416, headers: { ...headers, "Content-Range": `bytes */${size}` } });
     }

@@ -186,7 +186,7 @@ export type DuoConfig = z.infer<typeof duoConfigSchema>;
 
 /** "layali": cinematic template (embossed 3D envelope + film-like hero). Content comes from `noor`. */
 export const layaliConfigSchema = z.object({
-  look: z.enum(["velvet", "royal", "midnight", "garden"]),
+  look: z.enum(["velvet", "royal", "midnight", "garden", "khaliji", "saeedi"]),
 });
 
 export type LayaliConfig = z.infer<typeof layaliConfigSchema>;
@@ -262,7 +262,9 @@ export interface PreviewLink {
   createdAt: string;
 }
 
-export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // Vercel request body limit is 4.5 MB
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // per request: Vercel request body limit is 4.5 MB
+/** Whole file (bigger files are uploaded in pieces of at most MAX_UPLOAD_BYTES). */
+export const MAX_MEDIA_BYTES = 12 * 1024 * 1024;
 
 export const AUDIO_TYPES = ["audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/aac", "audio/ogg", "audio/wav", "audio/webm"];
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif", "image/svg+xml"];

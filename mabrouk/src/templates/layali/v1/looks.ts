@@ -5,9 +5,11 @@ import type { CSSProperties } from "react";
  * style and the colors of the invitation pages. All colors are applied as
  * inline CSS variables (no dependency on a cached stylesheet).
  */
-export type LayaliLookId = "velvet" | "royal" | "midnight" | "garden";
-export type Motif = "damask" | "lace" | "star" | "floral";
-export type Particles = "dust" | "petals" | "lanterns";
+export type LayaliLookId = "velvet" | "royal" | "midnight" | "garden" | "khaliji" | "saeedi";
+export type Motif = "damask" | "lace" | "star" | "floral" | "sadu" | "tally";
+export type Particles = "dust" | "petals" | "lanterns" | "incense";
+/** Woven / embroidered border strip from a regional tradition. */
+export type Band = "sadu" | "tally";
 
 export interface LayaliLook {
   name: { ar: string; en: string };
@@ -29,6 +31,10 @@ export interface LayaliLook {
   foil: [string, string, string];
   /** Dark cinematic tint laid over hero photos. */
   shade: string;
+  /** Regional border strip on the envelope, card and hero. */
+  band?: Band;
+  /** Greeting on the card (defaults to "You are warmly invited"). */
+  invited?: { ar: string; en: string };
 }
 
 const GOLD: [string, string, string] = ["#F7E7B4", "#C9A24A", "#7A5A1C"];
@@ -89,6 +95,38 @@ export const LAYALI_LOOKS: Record<LayaliLookId, LayaliLook> = {
     page: { bg: "#FBF0EE", bg2: "#F3DCD8", surface: "#FFFAF9", ink: "#4E2530", inkSoft: "#86606A", accent: "#B4606E", dark: false },
     foil: ["#F9E3C4", "#C99A6B", "#8A5A3A"],
     shade: "#3A1620",
+  },
+  khaliji: {
+    name: { ar: "خليجي — سدو وذهب", en: "Khaliji — Sadu & gold" },
+    motif: "sadu",
+    paper: "#0F3A34",
+    flap: "#13453E",
+    lining: "#0A2622",
+    seal: GOLD,
+    envelopeInk: "#EBD293",
+    card: { bg: "#FBF6EC", ink: "#14332E", accent: "#A8843A" },
+    particles: "incense",
+    page: { bg: "#0D2E2A", bg2: "#071B18", surface: "#123B35", ink: "#F4EEDD", inkSoft: "rgba(244,238,221,0.78)", accent: "#DDBF73", dark: true },
+    foil: GOLD,
+    shade: "#061714",
+    band: "sadu",
+    invited: { ar: "حيّاكم الله", en: "You are most welcome" },
+  },
+  saeedi: {
+    name: { ar: "صعيدي — تلّي فضي", en: "Saeedi — Silver tally" },
+    motif: "tally",
+    paper: "#18181D",
+    flap: "#1E1E24",
+    lining: "#0E0E12",
+    seal: ["#FFFFFF", "#C3C7CF", "#5B5F68"],
+    envelopeInk: "#E3E5EA",
+    card: { bg: "#FAF8F3", ink: "#1E1E24", accent: "#7D818B" },
+    particles: "dust",
+    page: { bg: "#141418", bg2: "#09090B", surface: "#1E1E24", ink: "#F2F0EA", inkSoft: "rgba(242,240,234,0.76)", accent: "#D9DCE3", dark: true },
+    foil: ["#FFFFFF", "#C6CAD3", "#6A6E78"],
+    shade: "#09090B",
+    band: "tally",
+    invited: { ar: "يا مرحب بالحبايب", en: "Welcome, dear ones" },
   },
 };
 

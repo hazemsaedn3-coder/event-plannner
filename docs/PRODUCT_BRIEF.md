@@ -195,3 +195,14 @@ Inspired by the animation idea of competitor sites, built from scratch (no copie
   - a features grid
   - a floating WhatsApp button (also on the order pages)
   - the hero phone plays the velvet design
+
+## 12. No public prices, client results page, Khaliji & Saeedi designs (added October 2026)
+
+- **Prices are hidden from customers.** The website lists what's included and asks visitors to message on WhatsApp for the price. The owner quotes each customer personally. (`src/config/pricing.ts` was removed.)
+- **Client results page** (`/host/<slug>?key=…`). It is generated with every invitation and linked from the admin builder ("Send results link to client") and the invitations list ("📊 Results").
+  - It shows people attending against invited seats, replies, declines, guests yet to reply, and invitation opens.
+  - Tabs: all replies, attending, declined, wishes & messages, and the guest list.
+  - Search by name, refresh every 30 seconds, and Excel (CSV) export.
+- **Khaliji design** (`/demo/layali-khaliji`): emerald envelope with embossed Sadu weaving, a red-and-gold woven ribbon, a gold seal, rising incense smoke, and the greeting "حيّاكم الله".
+- **Saeedi design** (`/demo/layali-saeedi`): black and silver with embossed Upper-Egyptian tally embroidery, a tally ribbon, a silver seal, and the greeting "يا مرحب بالحبايب".
+- **Own songs and voices.** Upload them in Admin → Music & images, or in the "Background music" section of any design or invitation. Files up to 12 MB are uploaded in 3 MB pieces and served in slices of 2 MB or less, to stay within Vercel's 4.5 MB request and response limits.

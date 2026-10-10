@@ -119,6 +119,8 @@ export function ContentEditor({
                 ["royal", "Royal gold lace · gold dust", "#C6A15A"],
                 ["midnight", "Midnight stars · lanterns", "#121E38"],
                 ["garden", "Rose garden · falling petals", "#ECD0CB"],
+                ["khaliji", "Khaliji · Sadu weaving & gold · incense", "#0F3A34"],
+                ["saeedi", "Saeedi · silver tally embroidery", "#18181D"],
               ] as const
             ).map(([id, label, swatch]) => (
               <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 ${t.layali?.look === id ? "border-[#B08A45] bg-[#FBF6EA]" : "border-[#EFE6D4]"}`}>
@@ -505,7 +507,7 @@ export function ContentEditor({
             );
           })}
         </ul>
-        <MediaUploader compact accept="audio/*" label="Upload a track (MP3/M4A, ≤ 4 MB)" onUploaded={(m) => (addMedia(m), toggleTrack(m.id, true))} />
+        <MediaUploader compact accept="audio/*" label="Upload a song or voice (MP3/M4A, ≤ 12 MB)" onUploaded={(m) => (addMedia(m), toggleTrack(m.id, true))} />
       </Section>
     </>
   );

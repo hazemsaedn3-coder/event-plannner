@@ -177,6 +177,8 @@ function layali(o: {
   couple: string[];
   venue: { ar: string; en: string };
   track: string;
+  hostsLine?: { ar: string; en: string };
+  inviteLine?: { ar: string; en: string };
 }): ShowcaseTemplate {
   return {
     id: o.id,
@@ -191,14 +193,16 @@ function layali(o: {
       ...baseNoor,
       ...demo({ couple: "filmstrip", venue: "hero", gallery: "coverflow" }),
       couple: { images: o.couple.map(P), layout: "filmstrip" },
+      // No couple photos → the hero shows the venue instead.
+      ...(o.couple.length ? {} : { features: { couplePhotos: false } }),
       partner1: o.p1,
       partner2: o.p2,
       latin1: o.p1.en,
       latin2: o.p2.en,
       date: o.date,
       venueName: o.venue,
-      hostsLine: { ar: "بقلوب يملؤها الفرح، ندعوكم لمشاركتنا ليلة العمر", en: "With hearts full of joy, we invite you to the night of our lives" },
-      inviteLine: { ar: "وجودكم يكمّل فرحتنا", en: "Your presence completes our joy" },
+      hostsLine: o.hostsLine ?? { ar: "بقلوب يملؤها الفرح، ندعوكم لمشاركتنا ليلة العمر", en: "With hearts full of joy, we invite you to the night of our lives" },
+      inviteLine: o.inviteLine ?? { ar: "وجودكم يكمّل فرحتنا", en: "Your presence completes our joy" },
     },
     layali: { look: o.look },
     variables: {},
@@ -276,6 +280,50 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     couple: ["couple-field", "couple-bouquet", "couple-forest", "couple-glance"],
     venue: { ar: "حديقة الأزهر", en: "Al-Azhar Park" },
     track: "builtin:romantic-one",
+  }),
+  layali({
+    id: "layali-khaliji",
+    look: "khaliji",
+    sortOrder: 2,
+    name: { ar: "خليجي — سدو وذهب", en: "Khaliji — Sadu & Gold" },
+    description: {
+      ar: "ظرف زمردي بنقش السدو البارز وشريط منسوج أحمر وذهبي، ختم ذهبي، ودخان بخور بيطلع بهدوء. حيّاكم الله.",
+      en: "An emerald envelope with embossed Sadu weaving, a red-and-gold woven ribbon, a gold seal and soft rising incense smoke.",
+    },
+    colors: { background: "#0D2E2A", surface: "#123B35", text: "#F4EEDD", accent: "#DDBF73", seal: "#C9A24A" },
+    p1: { ar: "سلطان", en: "Sultan" },
+    p2: { ar: "نورة", en: "Noura" },
+    date: "2027-02-18T20:30",
+    couple: [],
+    venue: { ar: "قصر الأفراح — الرياض", en: "Al Afrah Palace, Riyadh" },
+    track: "builtin:romantic-one",
+    hostsLine: {
+      ar: "بكل الحب والتقدير، يتشرّف أهل العروسين بدعوتكم لحضور حفل زواج",
+      en: "With love and honour, the two families invite you to the wedding of",
+    },
+    inviteLine: { ar: "حضوركم يزيدنا فرحاً وشرفاً… حيّاكم الله", en: "Your presence honours us. You are most welcome" },
+  }),
+  layali({
+    id: "layali-saeedi",
+    look: "saeedi",
+    sortOrder: 3,
+    name: { ar: "صعيدي — تلّي فضي", en: "Saeedi — Silver Tally" },
+    description: {
+      ar: "أسود وفضي بتطريز التلّي الصعيدي البارز وشريط تلّي على الظرف والكارت، وختم فضي بحروفكم. أصالة الصعيد بحركة سينمائية.",
+      en: "Black and silver with embossed Upper-Egyptian tally embroidery, a tally ribbon on the envelope and card, and a silver seal with your initials.",
+    },
+    colors: { background: "#141418", surface: "#1E1E24", text: "#F2F0EA", accent: "#D9DCE3", seal: "#C3C7CF" },
+    p1: { ar: "حسن", en: "Hassan" },
+    p2: { ar: "زينب", en: "Zeinab" },
+    date: "2027-08-20T19:00",
+    couple: [],
+    venue: { ar: "دوّار العيلة — سوهاج", en: "The family dawar, Sohag" },
+    track: "builtin:shaabi-one",
+    hostsLine: {
+      ar: "يا مرحب بالحبايب… بكل الفرح والمحبة ندعوكم لفرح",
+      en: "Welcome, dear ones! With all our joy and love we invite you to the wedding of",
+    },
+    inviteLine: { ar: "نوّرتونا وشرّفتونا… وفرحتنا ما تكملش غير بيكم", en: "You honour us, and our joy is only complete with you" },
   }),
   {
     id: "noor-ivory-gold",

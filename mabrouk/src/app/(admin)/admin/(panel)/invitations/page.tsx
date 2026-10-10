@@ -77,6 +77,9 @@ async function Invitations() {
                   Open ↗
                 </a>
                 <CopyLink value={url} label="Copy link" done="Copied ✓" />
+                <a href={`/host/${inv.slug}?key=${encodeURIComponent(inv.hostKey)}`} target="_blank" rel="noopener noreferrer" className="rounded-full border border-[#E7D3A6] bg-[#FBF6EA] px-3 py-1.5">
+                  📊 Results ↗
+                </a>
                 <form action={setInvitationStatus.bind(null, inv.slug, inv.status === "active" ? "inactive" : "active")}>
                   <button className="rounded-full border border-[#E1D5BE] px-3 py-1.5">{inv.status === "active" ? "Deactivate" : "Activate"}</button>
                 </form>

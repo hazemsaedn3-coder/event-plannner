@@ -2,7 +2,29 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { MediaMeta } from "@/catalog/types";
+import { MAX_MEDIA_BYTES, type MediaMeta } from "@/catalog/types";
+
+const PIECE = 3 * 1024 * 1024;
+
+/** Sends a file in pieces of 3 MB (each request stays under Vercel's 4.5 MB body limit). */
+async function uploadOne(file: File, progress: (pct: number) => void): Promise<{ media: MediaMeta } | { error: string }> {
+  const first = new FormData();
+  first.append("file", new File([file.slice(0, PIECE)], file.name, { type: file.type }));
+  first.append("total", String(file.size));
+  const res = await fetch("/api/admin/media", { method: "POST", body: first }).catch(() => null);
+  const data = await res?.json().catch(() => null);
+  if (!res?.ok || !data?.media) return { error: data?.error ?? "upload failed" };
+  const media: MediaMeta = data.media;
+  for (let at = PIECE; at < file.size; at += PIECE) {
+    progress(Math.round((at / file.size) * 100));
+    const body = new FormData();
+    body.append("file", file.slice(at, at + PIECE));
+    if (at + PIECE >= file.size) body.append("last", "1");
+    const r = await fetch(`/api/admin/media/${media.id}/append`, { method: "POST", body }).catch(() => null);
+    if (!r?.ok) return { error: "upload interrupted. Delete the broken track below and try again" };
+  }
+  return { media };
+}
 
 /** Uploads one or more files to /api/admin/media. Calls onUploaded for each success. */
 export function MediaUploader({
@@ -26,16 +48,13 @@ export function MediaUploader({
     setMessage(null);
     const errors: string[] = [];
     for (const file of Array.from(files)) {
-      if (file.size > 4 * 1024 * 1024) {
-        errors.push(`${file.name}: larger than 4 MB`);
+      if (file.size > MAX_MEDIA_BYTES) {
+        errors.push(`${file.name}: larger than 12 MB`);
         continue;
       }
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/admin/media", { method: "POST", body }).catch(() => null);
-      const data = await res?.json().catch(() => null);
-      if (res?.ok && data?.media) onUploaded?.(data.media);
-      else errors.push(`${file.name}: ${data?.error ?? "upload failed"}`);
+      const result = await uploadOne(file, (p) => setMessage(`${file.name}: ${p}%`));
+      if ("media" in result) onUploaded?.(result.media);
+      else errors.push(`${file.name}: ${result.error}`);
     }
     setBusy(false);
     setMessage(errors.length ? errors.join(" · ") : "Uploaded ✓");
