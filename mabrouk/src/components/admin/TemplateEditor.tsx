@@ -259,6 +259,32 @@ export function TemplateEditor({ initial, media: initialMedia, links: initialLin
 
         {t.kind === "duo" && t.duo && (
           <Section title="Two entrances" hint="Guests choose a side on the entrance screen. The bride's friends get the romantic world, the groom's friends the shaabi one; both see all the details below.">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Entrance style">
+                <select
+                  className={input}
+                  value={t.duo.style ?? "diagonal"}
+                  onChange={(e) => setT((x) => ({ ...x, duo: { ...x.duo!, style: e.target.value as NonNullable<DuoConfig["style"]> } }))}
+                >
+                  <option value="diagonal">Diagonal split with glowing seam</option>
+                  <option value="doors">Two palace doors that open</option>
+                  <option value="tickets">Two party tickets (tear to enter)</option>
+                  <option value="split">Half & half with zigzag line</option>
+                </select>
+              </Field>
+              <Field label="Colors (both worlds)">
+                <select
+                  className={input}
+                  value={t.duo.palette ?? "classic"}
+                  onChange={(e) => setT((x) => ({ ...x, duo: { ...x.duo!, palette: e.target.value as NonNullable<DuoConfig["palette"]> } }))}
+                >
+                  <option value="classic">Blush × Neon violet</option>
+                  <option value="royal">Ivory × Red tent (khayamiya)</option>
+                  <option value="night">Lavender × Teal neon</option>
+                  <option value="sunset">Peach × Green & gold</option>
+                </select>
+              </Field>
+            </div>
             <L10nField label="Entrance question" value={t.duo.gateQuestion} onChange={(v) => setT((x) => ({ ...x, duo: { ...x.duo!, gateQuestion: v } }))} />
             {(["bride", "groom"] as const).map((side) => (
               <div key={side} className={`flex flex-col gap-3 rounded-2xl p-4 ${side === "bride" ? "bg-[#FCE8EE]" : "bg-[#EDE6F7]"}`}>

@@ -1,0 +1,164 @@
+/*
+ * Farah (two-entrance) template animations. Kept in its own file and
+ * imported by the components that use it. Colors come from inline CSS
+ * variables (see palettes.ts), not from here.
+ */
+.duo-shaabi-fonts .f-names {
+  font-weight: 400;
+}
+
+/* Floating hearts and petals (romantic) */
+.duo-heart {
+  position: absolute;
+  bottom: -40px;
+  color: var(--particle);
+  animation: duo-float-up linear infinite;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+@keyframes duo-float-up {
+  0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.8); opacity: 0; }
+  10% { opacity: 0.85; }
+  50% { transform: translateY(-55vh) translateX(18px) rotate(12deg) scale(1); }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-110vh) translateX(-14px) rotate(-10deg) scale(1.05); opacity: 0; }
+}
+.duo-petal {
+  position: absolute;
+  top: -30px;
+  width: 14px;
+  height: 18px;
+  border-radius: 80% 0 80% 0;
+  background: var(--particle);
+  opacity: 0.75;
+  animation: duo-fall linear infinite;
+}
+@keyframes duo-fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(115vh) translateX(60px) rotate(540deg); }
+}
+.duo-bokeh {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(18px);
+  animation: duo-breathe 6s ease-in-out infinite alternate;
+}
+@keyframes duo-breathe {
+  from { opacity: 0.35; transform: scale(0.9); }
+  to { opacity: 0.75; transform: scale(1.1); }
+}
+
+/* Shaabi: light rays, bulbs, bunting, confetti, marquee */
+.duo-rays {
+  position: absolute;
+  inset: -50%;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--accent) 12%, transparent) 0deg 8deg, transparent 8deg 22deg);
+  animation: duo-spin 40s linear infinite;
+}
+@keyframes duo-spin {
+  to { transform: rotate(360deg); }
+}
+.duo-bulb {
+  animation: duo-blink 1.2s ease-in-out infinite;
+}
+@keyframes duo-blink {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px currentColor); }
+  50% { opacity: 0.35; filter: none; }
+}
+.duo-bunting {
+  transform-origin: top center;
+  animation: duo-swing 2.6s ease-in-out infinite alternate;
+}
+@keyframes duo-swing {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+.duo-confetti {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  animation: duo-fall linear infinite;
+}
+.duo-flicker {
+  animation: duo-flicker 3.2s infinite;
+}
+@keyframes duo-flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+.duo-marquee {
+  display: flex;
+  width: max-content;
+  animation: duo-marquee 14s linear infinite;
+}
+[dir="rtl"] .duo-marquee {
+  animation-direction: reverse;
+}
+@keyframes duo-marquee {
+  to { transform: translateX(-50%); }
+}
+.duo-bounce {
+  display: inline-block;
+  animation: duo-bounce 0.9s ease-in-out infinite alternate;
+}
+@keyframes duo-bounce {
+  to { transform: translateY(-8px) scale(1.08); }
+}
+.duo-pulse {
+  animation: duo-pulse 1.8s ease-in-out infinite;
+}
+@keyframes duo-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Divider line along the seam: a light that travels along it */
+.duo-seam-dash {
+  stroke-dasharray: 2 3;
+  animation: duo-dash 1.6s linear infinite;
+}
+@keyframes duo-dash {
+  to { stroke-dashoffset: -10; }
+}
+.duo-shimmer {
+  animation: duo-shimmer 2.4s ease-in-out infinite;
+}
+@keyframes duo-shimmer {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Khayamiya (Egyptian tent fabric) stripes for the "royal" shaabi world */
+.duo-khayamiya {
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0 14px,
+    transparent 14px 28px,
+    color-mix(in srgb, var(--hot) 18%, transparent) 28px 42px,
+    transparent 42px 56px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duo-heart,
+  .duo-petal,
+  .duo-confetti,
+  .duo-rays,
+  .duo-bulb,
+  .duo-bunting,
+  .duo-marquee,
+  .duo-bounce,
+  .duo-pulse,
+  .duo-flicker,
+  .duo-seam-dash,
+  .duo-shimmer,
+  .duo-bokeh {
+    animation: none !important;
+  }
+  .duo-heart,
+  .duo-petal,
+  .duo-confetti {
+    display: none;
+  }
+}

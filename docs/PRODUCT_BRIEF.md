@@ -152,3 +152,11 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
   - Both sides show all the details (countdown, venue + maps + calendar, dress code, RSVP). Guests can switch sides or go back to the entrance; the song switches with them, and the demo's music player follows.
 - Default demo: `/demo/farah-bride-groom`, first in the landing gallery. Duplicate it, or use **+ New bride/groom design** in `/admin`. Each side's entrance label, title, message and song are editable in the "Two entrances" section.
 - The two songs ship with the site as built-in tracks (`public/audio/romantic-one.mp3`, `public/audio/shaabi-one.mp3`, served by the CDN), next to the synthesized music box. They were supplied by the founder, who is responsible for their usage rights.
+- **Entrance styles** (picked per template in the editor, "Entrance style"), each with a visible divider between the two choices:
+  - `diagonal`: a slanted split with a glowing dashed seam and heart/star charms.
+  - `doors`: two arched palace doors that swing open, separated by a pillar with an "أو" diamond.
+  - `tickets`: two tear-off entry tickets with perforations and a dashed "أو" divider.
+  - `split`: two halves joined by a glowing zigzag seam.
+- **Color sets** ("Colors (both worlds)"): `classic` (blush × neon violet), `royal` (ivory × red khayamiya tent), `night` (lavender × teal neon), `sunset` (peach × green & gold). Text on the dark (groom) side is always white, with a neon glow on titles.
+- Four ready demos: `farah-bride-groom` (diagonal/classic), `farah-palace-doors` (doors/royal), `farah-party-tickets` (tickets/night), `farah-half-half` (split/sunset).
+- Colors are applied as inline CSS variables and the animations live in `src/templates/duo/v1/duo.css`, imported by the components themselves, so a stale cached global stylesheet can no longer leave the design unstyled.

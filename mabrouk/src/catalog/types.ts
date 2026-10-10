@@ -83,6 +83,10 @@ export const duoConfigSchema = z.object({
   groom: duoSideSchema,
   /** Question shown on the entrance gate. */
   gateQuestion: l10n,
+  /** Entrance layout. Missing = "diagonal" (templates saved before styles existed). */
+  style: z.enum(["diagonal", "doors", "tickets", "split"]).optional(),
+  /** Color worlds for both sides. Missing = "classic". */
+  palette: z.enum(["classic", "royal", "night", "sunset"]).optional(),
 });
 
 export type DuoConfig = z.infer<typeof duoConfigSchema>;
