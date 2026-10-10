@@ -4,6 +4,7 @@ import { m } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 import { audienceLabel, ui } from "@/lib/i18n";
+import type { L10n } from "@/lib/types";
 import type { InvitationView, SubEventView } from "@/lib/view";
 import { useLocale } from "../../shared/LocaleContext";
 import { ArchFrame, Corner, DateParts, Divider, Dot, Icon, Star8 } from "./Ornaments";
@@ -170,7 +171,7 @@ function remaining(target: number, now: number) {
   };
 }
 
-export function Countdown({ startsAt }: { startsAt: string }) {
+export function Countdown({ startsAt, title, showSeconds = true }: { startsAt: string; title?: L10n; showSeconds?: boolean }) {
   const { tr, locale } = useLocale();
   const target = new Date(startsAt).getTime();
   // null until mounted: the server can't know the visitor's "now".
@@ -190,18 +191,18 @@ export function Countdown({ startsAt }: { startsAt: string }) {
     { key: "hours", label: ui.hours, value: r?.hours },
     { key: "minutes", label: ui.minutes, value: r?.minutes },
     { key: "seconds", label: ui.seconds, value: r?.seconds },
-  ];
+  ].filter((u) => showSeconds || u.key !== "seconds");
 
   return (
     <section className="px-5 py-14">
       <Reveal>
         <p className="f-display mb-6 text-center text-[13px] text-[var(--accent)] ltr:tracking-[0.3em] ltr:uppercase">
-          {tr(ui.countdown)}
+          {tr(title ?? ui.countdown)}
         </p>
         {r?.done ? (
           <p className="f-display text-center text-[28px] text-[var(--ink)]">{tr(ui.itsToday)}</p>
         ) : (
-          <div className="mx-auto grid max-w-[380px] grid-cols-4 gap-2.5">
+          <div className={`mx-auto grid gap-2.5 ${showSeconds ? "max-w-[380px] grid-cols-4" : "max-w-[300px] grid-cols-3"}`}>
             {units.map((u) => (
               <div
                 key={u.key}
@@ -395,24 +396,50 @@ export function Details({ view }: { view: InvitationView }) {
 /* Gallery (optional — templates must look complete without photos)   */
 /* ------------------------------------------------------------------ */
 
-export function Gallery({ view }: { view: InvitationView }) {
+export function Gallery({ view, onOpen }: { view: InvitationView; onOpen?: (images: string[], index: number) => void }) {
   const { tr } = useLocale();
   if (!view.gallery?.length) return null;
+  const srcs = view.gallery.map((g) => g.src);
+  const layout = view.galleryLayout ?? "carousel";
+  const tile = (img: (typeof view.gallery)[number], i: number, className: string) => (
+    <button
+      type="button"
+      key={`${img.src}-${i}`}
+      onClick={() => onOpen?.(srcs, i)}
+      aria-label={`${tr(ui.enlarge)} ${i + 1}`}
+      className={`group relative block overflow-hidden border border-[var(--line)] ${className}`}
+    >
+      <Image src={img.src} alt={tr(img.alt)} fill sizes="(max-width: 640px) 72vw, 300px" className="object-cover transition duration-700 group-hover:scale-[1.04]" loading="lazy" unoptimized />
+    </button>
+  );
   return (
     <section className="py-14">
       <Reveal>
         <SectionTitle>{tr(ui.gallery)}</SectionTitle>
       </Reveal>
-      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none]">
-        {view.gallery.map((img) => (
-          <div
-            key={img.src}
-            className="relative aspect-[3/4] w-[72vw] max-w-[300px] shrink-0 snap-center overflow-hidden rounded-t-full rounded-b-[18px] border border-[var(--line)]"
-          >
-            <Image src={img.src} alt={tr(img.alt)} fill sizes="72vw" className="object-cover" loading="lazy" unoptimized />
-          </div>
-        ))}
-      </div>
+      {layout === "carousel" && (
+        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {view.gallery.map((img, i) => tile(img, i, "aspect-[3/4] w-[72vw] max-w-[300px] shrink-0 snap-center rounded-t-full rounded-b-[18px]"))}
+        </div>
+      )}
+      {layout === "grid" && (
+        <div className="mx-auto grid max-w-[520px] grid-cols-2 gap-2.5 px-5 sm:grid-cols-3">
+          {view.gallery.map((img, i) => (
+            <Reveal key={`${img.src}-${i}`} delay={(i % 6) * 0.05}>
+              {tile(img, i, "aspect-square w-full rounded-[16px]")}
+            </Reveal>
+          ))}
+        </div>
+      )}
+      {layout === "masonry" && (
+        <div className="mx-auto max-w-[520px] columns-2 gap-2.5 px-5">
+          {view.gallery.map((img, i) => (
+            <Reveal key={`${img.src}-${i}`} delay={(i % 6) * 0.05} className="mb-2.5 break-inside-avoid">
+              {tile(img, i, `w-full rounded-[16px] ${["aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-[3/5]"][i % 4]}`)}
+            </Reveal>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -80,6 +80,31 @@ export interface InvitationView {
   /** Optional couple photo shown inside the hero arch. */
   heroImage?: string;
 
+  /**
+   * Section switches set by the admin. Missing = everything on (hand-written
+   * invitations in src/content). Read through `shows(view, key)`.
+   */
+  features?: Partial<Record<FeatureKey, boolean>>;
+  couple?: { images: string[]; layout: "arch" | "polaroid" | "filmstrip" | "mosaic" };
+  galleryLayout?: "carousel" | "grid" | "masonry";
+  venueShowcase?: {
+    images: string[];
+    layout: "hero" | "carousel" | "grid";
+    title?: L10n;
+    story?: L10n;
+    mapsUrl: string | null;
+    /** Turn-by-turn directions (Google Maps "dir" link). */
+    directionsUrl: string | null;
+    venueName: L10n;
+    venueAddress?: L10n;
+  };
+  timeline?: { time: L10n; title: L10n; note?: L10n }[];
+  contacts?: { name: L10n; phone: string }[];
+  notes?: { title?: L10n; body: L10n };
+  countdown?: { title?: L10n; showSeconds: boolean };
+  /** Public URL guests can share (social sharing section). */
+  shareUrl?: string;
+
   rsvp: {
     enabled: boolean;
     open: boolean;
@@ -94,4 +119,13 @@ export interface InvitationView {
   };
 
   expired: boolean;
+}
+
+export type FeatureKey =
+  | "countdown" | "couplePhotos" | "music" | "venue" | "timeline" | "venueImages" | "mapsButton"
+  | "gallery" | "rsvp" | "dressCode" | "gifts" | "contact" | "notes" | "share" | "animations";
+
+/** Is this section switched on? (Missing switch = on.) */
+export function shows(view: Pick<InvitationView, "features">, key: FeatureKey): boolean {
+  return view.features?.[key] !== false;
 }

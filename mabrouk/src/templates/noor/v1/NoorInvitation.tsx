@@ -7,10 +7,12 @@ import type { L10n, Locale } from "@/lib/types";
 import type { InvitationView } from "@/lib/view";
 import { LocaleContext } from "../../shared/LocaleContext";
 import { createMusicPlayer, type MusicPlayer } from "../../shared/music";
+import "../../shared/still.css";
+import { shows } from "@/lib/view";
+import { InvitationSections } from "./Body";
 import { Envelope } from "./Envelope";
 import { Icon } from "./Ornaments";
-import { Rsvp } from "./Rsvp";
-import { Countdown, Details, Events, Footer, Gallery, Hero, Story } from "./Sections";
+import { Hero } from "./Sections";
 import { noorThemes, themeStyle } from "./themes";
 
 /**
@@ -21,6 +23,8 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
   const preset = noorThemes[view.themeId];
   const theme = view.themeColors ? { ...preset, colors: view.themeColors } : preset;
   const externalMusic = Boolean(view.music.external);
+  const still = !shows(view, "animations");
+  const musicOn = shows(view, "music");
   const [locale, setLocale] = useState<Locale>(view.initialLocale);
   const [stage, setStage] = useState<"sealed" | "opening" | "open">("sealed");
   const [playing, setPlaying] = useState(false);
@@ -75,7 +79,7 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
   const guestCode = view.guest?.code;
   const onOpen = useCallback(() => {
     setStage("opening");
-    if (!externalMusic) void startMusic();
+    if (!externalMusic && musicOn) void startMusic();
     // Count the open for the host dashboard (fire-and-forget).
     const body = JSON.stringify({ slug, guestCode, locale });
     try {
@@ -85,24 +89,24 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
     } catch {
       /* analytics must never break the invitation */
     }
-  }, [setStage, startMusic, externalMusic, slug, guestCode, locale]);
+  }, [setStage, startMusic, externalMusic, musicOn, slug, guestCode, locale]);
 
   const ctx = useMemo(() => ({ locale, setLocale, tr: (text: L10n) => t(text, locale) }), [locale, setLocale]);
 
   return (
     <LocaleContext.Provider value={ctx}>
       <LazyMotion features={domAnimation} strict>
-        <MotionConfig reducedMotion="user">
+        <MotionConfig reducedMotion={still ? "always" : "user"}>
           <div
             lang={locale}
             dir={dirOf(locale)}
-            className="noor noor-bg relative min-h-[100svh] overflow-x-clip text-[var(--ink)]"
+            className={`noor noor-bg relative min-h-[100svh] overflow-x-clip text-[var(--ink)] ${still ? "mbk-still" : ""}`}
             style={themeStyle(theme) as CSSProperties}
           >
             <div className="noor-pattern pointer-events-none fixed inset-0" aria-hidden />
 
             <Controls
-              showMusic={!externalMusic}
+              showMusic={!externalMusic && musicOn}
               playing={playing}
               onToggleMusic={toggleMusic}
               locale={locale}
@@ -111,13 +115,7 @@ export default function NoorInvitation({ view }: { view: InvitationView }) {
 
             <main className="relative">
               <Hero view={view} revealed={stage === "open"} />
-              <Countdown startsAt={view.main.startsAt} />
-              <Story view={view} />
-              <Events view={view} />
-              <Details view={view} />
-              <Gallery view={view} />
-              <Rsvp view={view} />
-              <Footer view={view} />
+              <InvitationSections view={view} />
             </main>
 
             <AnimatePresence>

@@ -5,7 +5,7 @@ import { getStorage } from "@/storage";
 /** GET /api/host/[slug]/rsvps?key=… — CSV export of all replies. */
 export async function GET(req: Request, ctx: RouteContext<"/api/host/[slug]/rsvps">) {
   const { slug } = await ctx.params;
-  const inv = authorizeHost(slug, new URL(req.url).searchParams.get("key"));
+  const inv = await authorizeHost(slug, new URL(req.url).searchParams.get("key"));
   if (!inv) return json({ error: "not_found" }, 404);
 
   const rsvps = await getStorage().listRsvps(inv.slug);

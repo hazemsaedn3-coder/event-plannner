@@ -35,6 +35,74 @@ const baseNoor: NoorDemoConfig = {
   gallery: [],
 };
 
+/* ------------------------------------------------------------------ */
+/* Sample content so every demo looks like a finished invitation.      */
+/* Photos: public/demo (CC0, StockSnap), see public/demo/CREDITS.json. */
+/* ------------------------------------------------------------------ */
+
+const P = (name: string) => `/demo/${name}.webp`;
+
+const COUPLE = ["couple-walk", "couple-forest", "couple-glance", "couple-field", "couple-bouquet", "couple-sunset"].map(P);
+const VENUE = ["venue-hall", "venue-tables", "venue-candles", "venue-decor", "venue-chairs", "venue-cake"].map(P);
+const GALLERY = ["gallery-rings", "gallery-bouquet", "gallery-hands", "gallery-roses", "gallery-shoes", "gallery-book", "gallery-blooms", "gallery-ring-roses"].map(P);
+
+const sample: Partial<NoorDemoConfig> = {
+  features: {},
+  couple: { images: COUPLE.slice(0, 4), layout: "arch" },
+  venueShowcase: {
+    images: VENUE,
+    layout: "hero",
+    title: { ar: "مكان الفرح", en: "Where we celebrate" },
+    story: {
+      ar: "قاعة واسعة بسقف خشبي وأنوار دافئة تتعلّق فوق الطاولات، وجنينة صغيرة للصور عند الغروب. المكان على طريق السويس بعد دائري التجمع بخمس دقائق، وفيه جراج مجاني للضيوف.",
+      en: "A grand hall with a timber ceiling and warm lights strung over the tables, plus a small garden for sunset photos. Five minutes past the Tagamoa ring road on Suez Road, with free parking for guests.",
+    },
+  },
+  timeline: [
+    { time: "19:30", title: { ar: "استقبال الضيوف", en: "Guests arrive" }, note: { ar: "مشروبات ترحيب في الجنينة", en: "Welcome drinks in the garden" } },
+    { time: "20:30", title: { ar: "الزفة", en: "The zaffa" }, note: { ar: "دخول العروسين بالطبول والمزمار", en: "The couple's entrance with drums and mizmar" } },
+    { time: "21:00", title: { ar: "الرقصة الأولى", en: "First dance" }, note: { ar: "", en: "" } },
+    { time: "22:00", title: { ar: "العشاء", en: "Dinner" }, note: { ar: "بوفيه مفتوح", en: "Open buffet" } },
+    { time: "23:00", title: { ar: "تقطيع التورتة", en: "Cutting the cake" }, note: { ar: "", en: "" } },
+    { time: "23:30", title: { ar: "الحفلة لآخر الليل", en: "Dancing till late" }, note: { ar: "دي جي ومفاجآت", en: "DJ and surprises" } },
+  ],
+  gallery: GALLERY,
+  galleryLayout: "carousel",
+  gifts: {
+    message: {
+      ar: "وجودكم أجمل هدية. ولمن يحب أن يشاركنا بهدية، يسعدنا ذلك من هنا:",
+      en: "Your presence is the greatest gift. If you'd like to give something, you can do so here:",
+    },
+    accounts: [{ label: { ar: "إنستاباي", en: "InstaPay" }, value: "omar.laila@instapay" }],
+  },
+  contacts: [
+    { name: { ar: "والد العريس — أ. محمود", en: "Groom's father — Mahmoud" }, phone: "201000000001" },
+    { name: { ar: "أخت العروسة — سلمى", en: "Bride's sister — Salma" }, phone: "201000000002" },
+  ],
+  notes: {
+    title: { ar: "ملاحظات صغيرة", en: "Good to know" },
+    body: {
+      ar: "يُفضّل الحضور قبل الزفة بنص ساعة.\nالأطفال فوق ٨ سنوات مرحّب بهم.\nفي فاليه باركنج عند المدخل الرئيسي.",
+      en: "Please arrive half an hour before the zaffa.\nChildren over 8 are warmly welcome.\nValet parking at the main entrance.",
+    },
+  },
+  rsvpSettings: { deadline: "2027-06-01", maxHeadcount: 4 },
+  countdown: { title: { ar: "باقي على الفرح", en: "Until we say yes" }, showSeconds: true },
+};
+
+/** The same sample, laid out differently per design so each demo feels its own. */
+function demo(over: { couple?: NonNullable<NoorDemoConfig["couple"]>["layout"]; venue?: NonNullable<NoorDemoConfig["venueShowcase"]>["layout"]; gallery?: NoorDemoConfig["galleryLayout"]; rotate?: number }): Partial<NoorDemoConfig> {
+  const r = over.rotate ?? 0;
+  const turn = <T,>(a: T[]) => [...a.slice(r % a.length), ...a.slice(0, r % a.length)];
+  return {
+    ...sample,
+    couple: { images: turn(COUPLE).slice(0, 4), layout: over.couple ?? "arch" },
+    venueShowcase: { ...sample.venueShowcase!, images: turn(VENUE), layout: over.venue ?? "hero" },
+    gallery: turn(GALLERY),
+    galleryLayout: over.gallery ?? "carousel",
+  };
+}
+
 const music = { trackIds: [BUILTIN_TRACK], defaultTrackId: BUILTIN_TRACK };
 const cta = { ar: "أريد هذا التصميم", en: "I want this design" };
 const stamp = "2026-10-08T00:00:00.000Z";
@@ -65,6 +133,13 @@ h1 span{animation:fade 1.6s .4s both}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}`;
+
+const farahNoor: NoorDemoConfig = {
+  ...baseNoor,
+  opening: { ar: "", en: "" },
+  hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" },
+  inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" },
+};
 
 export const DEFAULT_DUO: DuoConfig = {
   gateQuestion: { ar: "إنت من طرف مين؟", en: "Whose side are you on?" },
@@ -101,7 +176,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#F8F2E7", surface: "#FFFBF4", text: "#3A2E22", accent: "#B08A45", seal: "#8C2232" },
-    noor: { ...baseNoor, baseTheme: "ivory-gold" },
+    noor: { ...baseNoor, ...demo({ couple: "arch", venue: "hero", gallery: "carousel" }), baseTheme: "ivory-gold" },
     variables: {},
     music,
     ctaText: cta,
@@ -119,7 +194,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#0E2E26", surface: "#133A30", text: "#F4EBD6", accent: "#D6B46C", seal: "#C9A253" },
-    noor: { ...baseNoor, baseTheme: "emerald-night" },
+    noor: { ...baseNoor, ...demo({ couple: "polaroid", venue: "carousel", gallery: "grid", rotate: 1 }), baseTheme: "emerald-night" },
     variables: {},
     music,
     ctaText: cta,
@@ -137,7 +212,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#F7E6E2", surface: "#FDF4F1", text: "#55343A", accent: "#B5737C", seal: "#9E4A58" },
-    noor: { ...baseNoor, baseTheme: "blush-rose" },
+    noor: { ...baseNoor, ...demo({ couple: "mosaic", venue: "grid", gallery: "masonry", rotate: 2 }), baseTheme: "blush-rose" },
     variables: {},
     music,
     ctaText: cta,
@@ -182,12 +257,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#F7E1E6", surface: "#FFF5F7", text: "#4A2430", accent: "#D4507A", seal: "#FFD400" },
-    noor: {
-      ...baseNoor,
-      opening: { ar: "", en: "" },
-      hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" },
-      inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" },
-    },
+    noor: { ...farahNoor, ...demo({ couple: "filmstrip", venue: "hero", gallery: "carousel" }) },
     duo: { ...DEFAULT_DUO, style: "diagonal", palette: "classic" },
     variables: {},
     music: { trackIds: ["builtin:romantic-one", "builtin:shaabi-one", BUILTIN_TRACK], defaultTrackId: "builtin:romantic-one" },
@@ -206,7 +276,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#FBF3EA", surface: "#FFFCF7", text: "#4A3426", accent: "#B5714F", seal: "#F5C542" },
-    noor: { ...baseNoor, opening: { ar: "", en: "" }, hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" }, inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" } },
+    noor: { ...farahNoor, ...demo({ couple: "polaroid", venue: "carousel", gallery: "grid", rotate: 1 }) },
     duo: {
       ...DEFAULT_DUO,
       style: "doors",
@@ -232,7 +302,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#EFE9FC", surface: "#FBF9FF", text: "#2F2350", accent: "#8B5CF6", seal: "#2EF2E2" },
-    noor: { ...baseNoor, opening: { ar: "", en: "" }, hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" }, inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" } },
+    noor: { ...farahNoor, ...demo({ couple: "mosaic", venue: "grid", gallery: "masonry", rotate: 2 }) },
     duo: {
       ...DEFAULT_DUO,
       style: "tickets",
@@ -258,7 +328,7 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     },
     thumbnail: "",
     colors: { background: "#FFEDE2", surface: "#FFF9F5", text: "#4D2A20", accent: "#E2674A", seal: "#FFC93C" },
-    noor: { ...baseNoor, opening: { ar: "", en: "" }, hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" }, inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" } },
+    noor: { ...farahNoor, ...demo({ couple: "filmstrip", venue: "carousel", gallery: "grid", rotate: 3 }) },
     duo: {
       ...DEFAULT_DUO,
       style: "split",

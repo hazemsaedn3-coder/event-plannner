@@ -61,7 +61,8 @@ export class SupabaseStorage implements StorageAdapter {
 
   private async ensureSynced(slug: string) {
     if (this.synced.has(slug)) return;
-    const inv = getInvitation(slug);
+    // Production invitations made in the admin are mirrored on save; this re-mirrors them if needed.
+    const inv = getInvitation(slug) ?? (await (await import("@/live/read")).liveContent(slug, new Date(), { ignoreWindow: true }));
     if (inv) await this.syncInvitation(inv);
   }
 

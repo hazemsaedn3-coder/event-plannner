@@ -1,5 +1,6 @@
 import "server-only";
 import { absoluteUrl } from "@/config/site";
+import { liveContent } from "@/live/read";
 import { getStorage } from "@/storage";
 import { getInvitation } from "./invitations";
 import { t } from "./i18n";
@@ -7,9 +8,11 @@ import { whatsappUrl } from "./links";
 import { safeEqual } from "./security";
 import type { Guest, InvitationContent, Locale, RsvpRecord } from "./types";
 
-export function authorizeHost(slug: string, key: unknown): InvitationContent | null {
-  const inv = getInvitation(slug);
-  if (!inv || typeof key !== "string" || !key) return null;
+export async function authorizeHost(slug: string, key: unknown): Promise<InvitationContent | null> {
+  if (typeof key !== "string" || !key) return null;
+  // Hand-written invitations first, then production invitations (the dashboard outlives the live window).
+  const inv = getInvitation(slug) ?? (await liveContent(slug, new Date(), { ignoreWindow: true }));
+  if (!inv) return null;
   return safeEqual(key, inv.hostKey) ? inv : null;
 }
 

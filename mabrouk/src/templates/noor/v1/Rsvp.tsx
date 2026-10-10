@@ -22,13 +22,20 @@ export function Rsvp({ view }: { view: InvitationView }) {
   const [status, setStatus] = useState<Status>("idle");
   const [answer, setAnswer] = useState<boolean | null>(null);
 
-  if (!view.rsvp.enabled) return null;
+  if (!view.rsvp.enabled || view.features?.rsvp === false) return null;
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (attending == null) return;
     setStatus("sending");
     const form = new FormData(e.currentTarget);
+    if (view.isDemo) {
+      // Demos show the real flow but store nothing.
+      await new Promise((r) => setTimeout(r, 600));
+      setAnswer(attending);
+      setStatus("done");
+      return;
+    }
     try {
       const res = await fetch("/api/rsvp", {
         method: "POST",

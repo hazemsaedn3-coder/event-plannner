@@ -160,3 +160,24 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
 - **Color sets** ("Colors (both worlds)"): `classic` (blush × neon violet), `royal` (ivory × red khayamiya tent), `night` (lavender × teal neon), `sunset` (peach × green & gold). Text on the dark (groom) side is always white, with a neon glow on titles.
 - Four ready demos: `farah-bride-groom` (diagonal/classic), `farah-palace-doors` (doors/royal), `farah-party-tickets` (tickets/night), `farah-half-half` (split/sunset).
 - Colors are applied as inline CSS variables and the animations live in `src/templates/duo/v1/duo.css`, imported by the components themselves, so a stale cached global stylesheet can no longer leave the design unstyled.
+
+## 10. Orders, production invitations and the feature manager (added October 2026)
+
+**Customer side**
+- `/order` (and `/en/order`): two clear paths, **Order online** or **Chat on WhatsApp**. The online form has 4 steps: design → couple, WhatsApp and event details → preferences, photos (compressed in the browser, private) and notes → review. On submit the customer gets an order reference (`MBK-XXXXXX`) and a confirmation page (`/order/done/<id>`) listing everything they sent, our WhatsApp number and what happens next.
+- The draft is kept on the customer's device while they type. Rate limits: 5 orders and 30 photos per client per hour (salted IP hash, never the IP). Honeypot field against bots.
+- Every demo's "Order" button opens the form with that design pre-selected; WhatsApp stays available in the share menu, the landing page and the order page.
+
+**Admin**
+- **Orders** (`/admin/orders`): status tabs with counts, search (names, phone, reference), paging. Order page: customer, event, requirements, photos (download / add to the media library), WhatsApp chat + "Mark number as verified", status (New → Pending review → Waiting for customer → Approved → In production → Completed / Cancelled) with a history timeline, internal notes, and **Generate invitation**.
+- **Invitations** (`/admin/invitations`): production links at `/i/<slug>`, each a snapshot of a design (later catalog edits never change it). The **builder** has a live preview that updates as you type, the link name, client name and phone, active/inactive, and the active period ("until the event date" + optional extra days, or a from–to date range). It also gives the client's WhatsApp message, the couple's private RSVP dashboard link, and usage (opens, RSVPs, attending). Outside the period, or when inactive, guests see a polite "not open yet / ended / not available" page.
+- Generating from an order pre-fills names, date, venue, maps link, language, music, the sections the customer asked for, and their photos (couple → couple photos, venue → venue showcase).
+
+**Feature manager (every Noor and Farah design, catalog and production)**
+- Switches: countdown, couple photos, music, date/venue card, schedule, venue images, Maps/Directions buttons, gallery, RSVP, dress code, gifts, contact, notes, social sharing, animations. Switched-off or empty sections disappear without leaving gaps.
+- Couple photos: none / one / many, layouts Arch (first photo in the hero), Polaroids, Filmstrip, Mosaic, reorderable. Venue showcase: many photos, Hero / Carousel / Grid layouts, lightbox, story text, Google Maps + Directions. Gallery: Carousel / Grid / Masonry with lightbox. Schedule, gifts (InstaPay/IBAN with copy), contacts (call + WhatsApp), notes, RSVP deadline and max guests, countdown title and seconds.
+- Imported HTML designs keep their own code (switches don't apply).
+
+**Demo content.** Every demo is a finished sample: 4 couple photos, 6 venue photos, 8 gallery photos, a 6-step schedule, gifts, contacts and notes, with layouts that differ per design. The photos are CC0 (StockSnap) and live in `public/demo` (credits in `public/demo/CREDITS.json`).
+
+**Database.** `supabase/production.sql` holds the `orders`, `order_files` and `live_invitations` tables and their secret-gated functions. Production invitations are mirrored into `invitations` so RSVPs and opens work through the existing tables and the couple's `/host/<slug>?key=` dashboard.

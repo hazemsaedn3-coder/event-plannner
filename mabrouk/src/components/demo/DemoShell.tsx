@@ -26,6 +26,7 @@ const T = {
     hint: "اضغط ▶ للموسيقى",
     preparedFor: "معاينة خاصة لـ",
     order: "اطلب",
+    chat: "كلّمنا على واتساب",
   },
   en: {
     play: "Play music",
@@ -42,6 +43,7 @@ const T = {
     hint: "Tap ▶ for music",
     preparedFor: "Private preview for",
     order: "Order",
+    chat: "Chat with us on WhatsApp",
   },
 };
 
@@ -61,6 +63,8 @@ export function DemoShell({
   locale,
   clientName,
   autoStartOnTap,
+  mode = "demo",
+  whatsappUrl,
 }: {
   children: ReactNode;
   tracks: DemoTrack[];
@@ -73,7 +77,12 @@ export function DemoShell({
   clientName?: string;
   /** Start music on the first tap anywhere on the page (the envelope tap). */
   autoStartOnTap: boolean;
+  /** "live": a couple's real invitation — no order button or catalog link. */
+  mode?: "demo" | "live";
+  /** Chat with the Mabrouk team (demo mode). */
+  whatsappUrl?: string;
 }) {
+  const live = mode === "live";
   const t = T[locale];
   const [trackId, setTrackId] = useState(tracks[0]?.id ?? "");
   const [playing, setPlaying] = useState(false);
@@ -187,7 +196,7 @@ export function DemoShell({
     <DemoAudioContext.Provider value={audioApi}>
       {children}
 
-      {clientName && (
+      {clientName && !live && (
         <div className="pointer-events-none fixed inset-x-0 top-16 z-[60] flex justify-center px-4" dir={locale === "ar" ? "rtl" : "ltr"}>
           <p className="rounded-full bg-black/55 px-4 py-1.5 text-[13px] text-white backdrop-blur-md">
             {t.preparedFor} <strong>{clientName}</strong>
@@ -201,14 +210,14 @@ export function DemoShell({
         className="fixed inset-x-0 bottom-0 z-[60] flex justify-center px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
         <div className="relative flex w-full max-w-[520px] items-center gap-1 rounded-full bg-[#141210]/85 p-1.5 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] ring-1 ring-white/10 backdrop-blur-xl">
-          <a href={galleryHref} className={iconBtn} aria-label={t.designs} title={t.designs}>
+          {!live && <a href={galleryHref} className={iconBtn} aria-label={t.designs} title={t.designs}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
               <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
               <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
               <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
               <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
             </svg>
-          </a>
+          </a>}
 
           {tracks.length > 0 && (
             <>
@@ -294,18 +303,18 @@ export function DemoShell({
             </svg>
           </button>
 
-          <a
-            href={orderUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[#1f9d55] px-4 text-[14px] font-semibold text-white transition hover:bg-[#1a8a4a]"
-          >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z" />
-            </svg>
-            <span className="hidden min-[400px]:inline">{ctaLabel}</span>
-            <span className="min-[400px]:hidden">{t.order}</span>
-          </a>
+          {!live && (
+            <a
+              href={orderUrl}
+              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-b from-[#C9A45C] to-[#A9823C] px-4 text-[14px] font-semibold text-white shadow-[0_6px_18px_-6px_rgba(201,164,92,0.8)] transition hover:brightness-110"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" strokeLinejoin="round" />
+              </svg>
+              <span className="hidden min-[400px]:inline">{ctaLabel}</span>
+              <span className="min-[400px]:hidden">{t.order}</span>
+            </a>
+          )}
 
           {shareOpen && (
             <div className="absolute bottom-[calc(100%+10px)] end-2 w-60 rounded-2xl bg-[#141210]/95 p-2 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur-xl">
@@ -323,6 +332,11 @@ export function DemoShell({
               >
                 {t.whatsapp}
               </a>
+              {!live && whatsappUrl && (
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block rounded-xl px-3 py-2.5 text-[14px] text-[#7CE0A3] hover:bg-white/10">
+                  {t.chat}
+                </a>
+              )}
               {typeof navigator !== "undefined" && "share" in navigator && (
                 <button
                   type="button"

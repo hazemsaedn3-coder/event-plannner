@@ -1,8 +1,14 @@
 import { cacheLife } from "next/cache";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
+import { DemoView } from "@/components/demo/DemoView";
+import { getLivePage } from "@/live/read";
+import { liveState } from "@/live/types";
+import { LiveStatus } from "./LiveStatus";
+import { TrackOpen } from "./TrackOpen";
 import { buildInvitationView, getGuest, getInvitation } from "@/lib/invitations";
 import { t } from "@/lib/i18n";
 import { pinCookieName, pinToken, safeEqual } from "@/lib/security";
@@ -43,10 +49,32 @@ async function PinProtected({ slug, guestCode, pin }: { slug: string; guestCode:
   return <Render view={view} />;
 }
 
+/** Production invitation made in the admin: rendered only inside its active period. */
+async function LiveResolved({ slug }: { slug: string }) {
+  const page = await getLivePage(slug);
+  if (!page) notFound();
+  await connection();
+  const state = liveState(page, new Date());
+  if (state !== "live") {
+    return <LiveStatus state={state} opensAt={page.validFrom} timeZone={page.timeZone} />;
+  }
+  const kind = page.payload.template.kind;
+  return (
+    <>
+      <DemoView payload={page.payload} />
+      {/* Noor counts the envelope opening itself. */}
+      {kind !== "noor" && <TrackOpen slug={slug} locale={page.payload.locale} />}
+    </>
+  );
+}
+
 async function Resolved({ params }: { params: Promise<{ slug: string; guestCode?: string }> }) {
   const { slug, guestCode = null } = await params;
   const inv = getInvitation(slug);
-  if (!inv) notFound();
+  if (!inv) {
+    if (guestCode) notFound();
+    return <LiveResolved slug={slug} />;
+  }
   if (inv.pin) {
     return (
       <Suspense fallback={<Shell />}>
@@ -78,6 +106,18 @@ export function InvitationPage({ params }: { params: Promise<{ slug: string; gue
 
 export async function invitationMetadata(slug: string, guestCode: string | null): Promise<Metadata> {
   const inv = getInvitation(slug);
+  if (!inv && !guestCode) {
+    const live = await getLivePage(slug);
+    if (!live) return { robots: { index: false, follow: false } };
+    return {
+      title: live.title,
+      description: live.description,
+      robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
+      referrer: "no-referrer",
+      openGraph: { title: live.title, description: live.description, type: "website", locale: "ar_EG", siteName: "Mabrouk · مبروك" },
+      twitter: { card: "summary_large_image", title: live.title, description: live.description },
+    };
+  }
   const guest = inv && guestCode ? getGuest(inv, guestCode) : null;
   if (!inv || (guestCode && !guest)) return { robots: { index: false, follow: false } };
 
@@ -103,13 +143,14 @@ export async function invitationMetadata(slug: string, guestCode: string | null)
   };
 }
 
-export function invitationViewport(slug: string): Viewport {
+export async function invitationViewport(slug: string): Promise<Viewport> {
   const inv = getInvitation(slug);
   const theme = inv ? resolveTemplate(inv.templateId, inv.templateVersion).themes[inv.themeId] : null;
+  const live = inv ? null : await getLivePage(slug);
   return {
     width: "device-width",
     initialScale: 1,
     viewportFit: "cover",
-    themeColor: theme?.colors.bg ?? "#F8F2E7",
+    themeColor: theme?.colors.bg ?? live?.payload.template.colors.background ?? "#F8F2E7",
   };
 }

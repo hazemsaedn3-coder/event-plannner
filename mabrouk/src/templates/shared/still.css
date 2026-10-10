@@ -1,0 +1,7 @@
+/* "Animated visual effects" switched off in the admin: freeze CSS animations
+   (motion components are stilled through MotionConfig reducedMotion). */
+.mbk-still *,
+.mbk-still *::before,
+.mbk-still *::after {
+  animation: none !important;
+}

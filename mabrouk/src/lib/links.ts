@@ -11,6 +11,13 @@ export function wazeUrl(venue: Venue): string | null {
   return `https://waze.com/ul?ll=${venue.lat},${venue.lng}&navigate=yes`;
 }
 
+/** Google Maps turn-by-turn directions to the venue (opens the Maps app on phones). */
+export function directionsUrl(venue: Venue, fallbackText?: string): string | null {
+  const fromLink = venue.mapsUrl?.match(/[?&](?:query|q|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+  const at = venue.lat != null && venue.lng != null ? `${venue.lat},${venue.lng}` : fromLink ? `${fromLink[1]},${fromLink[2]}` : fallbackText?.trim();
+  return at ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(at)}` : null;
+}
+
 function toCalendarStamp(iso: string): string {
   return new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }

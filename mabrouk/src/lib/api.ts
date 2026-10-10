@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { liveContent } from "@/live/read";
 import { getInvitation } from "./invitations";
 import { pinCookieName, pinToken, safeEqual } from "./security";
 import type { InvitationContent } from "./types";
@@ -23,7 +24,8 @@ export function sameOrigin(req: Request): boolean {
 export async function accessibleInvitation(slug: unknown): Promise<InvitationContent | null> {
   if (typeof slug !== "string" || slug.length > 100) return null;
   const inv = getInvitation(slug);
-  if (!inv) return null;
+  // Not a hand-written invitation: try the production invitations made in the admin.
+  if (!inv) return liveContent(slug);
   if (inv.pin) {
     const token = (await cookies()).get(pinCookieName(slug))?.value ?? "";
     if (!safeEqual(token, pinToken(slug, inv.pin))) return null;

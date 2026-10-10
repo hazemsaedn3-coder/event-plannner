@@ -4,7 +4,9 @@ import { logout } from "../actions";
 /** Shell for every signed-in admin page. Access is enforced by src/proxy.ts and each page. */
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
   const nav = [
-    { href: "/admin", label: "Templates" },
+    { href: "/admin/orders", label: "Orders" },
+    { href: "/admin/invitations", label: "Invitations" },
+    { href: "/admin", label: "Designs" },
     { href: "/admin/import", label: "Import" },
     { href: "/admin/media", label: "Music & images" },
   ];

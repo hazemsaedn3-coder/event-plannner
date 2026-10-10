@@ -1,4 +1,6 @@
 import type { DemoPayload } from "@/catalog/demo";
+import { siteConfig } from "@/config/site";
+import { whatsappUrl } from "@/lib/links";
 import DuoInvitation from "@/templates/duo/v1/DuoInvitation";
 import { resolveTemplate } from "@/templates/registry";
 import { DemoShell } from "./DemoShell";
@@ -20,6 +22,11 @@ export function DemoView({ payload }: { payload: DemoPayload }) {
       locale={locale}
       clientName={payload.clientName}
       autoStartOnTap={template.kind === "noor"}
+      mode={payload.mode}
+      whatsappUrl={whatsappUrl(
+        locale === "ar" ? `مرحباً مبروك 👋\nأريد هذا التصميم: «${name}»\n${payload.shareUrl}` : `Hi Mabrouk 👋\nI'd like this design: “${name}”\n${payload.shareUrl}`,
+        siteConfig.whatsappNumber,
+      )}
     >
       {payload.duo && payload.noorView ? (
         <DuoInvitation view={payload.noorView} duo={payload.duo} />

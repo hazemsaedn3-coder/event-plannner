@@ -61,7 +61,7 @@ async function Dashboard({
   const nf = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US");
   const df = new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
 
-  const inv = authorizeHost(slug, key);
+  const inv = await authorizeHost(slug, key);
   if (!inv) {
     return (
       <main lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="f-body flex min-h-[100svh] items-center justify-center p-8 text-center">

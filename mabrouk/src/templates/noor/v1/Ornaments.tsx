@@ -171,10 +171,64 @@ export function Icon({ name, className = "h-4 w-4" }: { name: IconName; classNam
           <path d="M5 12.5l4.5 4.5L19 7.5" />
         </svg>
       );
+    case "phone":
+      return (
+        <svg {...common}>
+          <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg {...common}>
+          <path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z" />
+          <path d="M9 10.5c.5 2 2.5 4 4.5 4.5l1-1.2 1.8.8" />
+        </svg>
+      );
+    case "share":
+      return (
+        <svg {...common}>
+          <circle cx="18" cy="5.5" r="2.5" />
+          <circle cx="6" cy="12" r="2.5" />
+          <circle cx="18" cy="18.5" r="2.5" />
+          <path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1" />
+        </svg>
+      );
+    case "note":
+      return (
+        <svg {...common}>
+          <path d="M6 3.5h9l3.5 3.5v13.5H6z" />
+          <path d="M14.5 3.5V7.5H18.5M9 12h6M9 15.5h6" />
+        </svg>
+      );
+    case "close":
+      return (
+        <svg {...common}>
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      );
+    case "chevron":
+      return (
+        <svg {...common}>
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      );
+    case "expand":
+      return (
+        <svg {...common}>
+          <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
+        </svg>
+      );
   }
 }
 
 export type IconName =
+  | "phone"
+  | "chat"
+  | "share"
+  | "note"
+  | "close"
+  | "chevron"
+  | "expand"
   | "pin"
   | "nav"
   | "calendar"

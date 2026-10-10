@@ -49,7 +49,8 @@ export function copy(l: Locale) {
         ar: "موقع دعوة أنيق بحركة وموسيقى، بالعربي والإنجليزي، يوصل لكل ضيوفكم برابط واحد على واتساب. فيه عدّ تنازلي، خرائط، وتأكيد حضور، وجاهز خلال ٧٢ ساعة.",
         en: "An elegant animated invitation website with music, in Arabic and English, shared with every guest as one WhatsApp link. Countdown, maps and RSVP included, ready in 72 hours.",
       },
-      cta: { ar: "اطلب دعوتك على واتساب", en: "Order on WhatsApp" },
+      cta: { ar: "اطلب دعوتك أونلاين", en: "Order online" },
+      chat: { ar: "كلّمنا على واتساب", en: "Chat on WhatsApp" },
       demo: { ar: "شاهد دعوة تجريبية", en: "Open a live demo" },
       from: {
         ar: `بـ ${price(pricing.base).egp} فقط`,
@@ -68,10 +69,10 @@ export function copy(l: Locale) {
           },
         },
         {
-          title: { ar: "ابعتوا التفاصيل على واتساب", en: "Send your details on WhatsApp" },
+          title: { ar: "املوا الطلب أو كلمونا", en: "Order online or message us" },
           body: {
-            ar: "الأسماء، المواعيد، والأماكن. ونحن نكتب الصياغة بالعربي والإنجليزي.",
-            en: "Names, dates and venues. We write the wording in Arabic and English.",
+            ar: "الأسماء والمواعيد والأماكن وصوركم في فورم بسيط، أو على واتساب مباشرة. ونحن نكتب الصياغة بالعربي والإنجليزي.",
+            en: "Names, dates, venues and photos in a short form, or straight on WhatsApp. We write the wording in Arabic and English.",
           },
         },
         {
@@ -105,6 +106,7 @@ export function copy(l: Locale) {
       copied: { ar: "تم نسخ الرابط", en: "Link copied" },
       empty: { ar: "تصاميم جديدة قريباً", en: "New designs coming soon" },
       order: { ar: "اطلب هذا التصميم", en: "Order this design" },
+      chat: { ar: "اسأل على واتساب", en: "Ask on WhatsApp" },
       templateName: { ar: "نور", en: "Noor" },
     },
     pricing: {
@@ -196,7 +198,20 @@ export function copy(l: Locale) {
     },
     final: {
       title: { ar: "جاهزين نفرح معكم", en: "Let's make your invitation" },
-      body: { ar: "ابعتوا لنا على واتساب ونبدأ فوراً.", en: "Message us on WhatsApp and we'll get started." },
+      body: { ar: "اطلبوا أونلاين في دقيقتين، أو ابعتولنا على واتساب ونبدأ فوراً.", en: "Order online in two minutes, or message us on WhatsApp and we'll get started." },
+    },
+    paths: {
+      title: { ar: "طريقتين للطلب", en: "Two ways to order" },
+      onlineTitle: { ar: "اطلب أونلاين", en: "Order online" },
+      onlineBody: {
+        ar: "اختاروا التصميم، اكتبوا الأسماء وتفاصيل الفرح، وارفعوا صوركم. هتستلموا رقم طلب وفريقنا يكلمكم للتأكيد.",
+        en: "Pick a design, add your names and wedding details, upload your photos. You get an order number and our team calls you to confirm.",
+      },
+      chatTitle: { ar: "كلّمنا مباشرة", en: "Talk to us directly" },
+      chatBody: {
+        ar: "عندكم سؤال أو طلب خاص؟ افتحوا واتساب وهنرد عليكم بسرعة.",
+        en: "A question or a special request? Open WhatsApp and we'll reply quickly.",
+      },
     },
     footer: {
       rights: { ar: "مبروك. دعوات زفاف رقمية.", en: "Mabrouk. Digital wedding invitations." },

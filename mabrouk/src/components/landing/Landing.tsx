@@ -4,7 +4,7 @@ import type { L10n, Locale } from "@/lib/types";
 import { Divider, Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
 import { CatalogGallery, GallerySkeleton } from "./CatalogGallery";
-import { copy, DEMO_SLUGS, orderUrl } from "./copy";
+import { copy, orderUrl } from "./copy";
 
 /** The marketing site. Server-rendered and fully static; the only JS on the page is the iframe. */
 export function Landing({ locale }: { locale: Locale }) {
@@ -12,6 +12,7 @@ export function Landing({ locale }: { locale: Locale }) {
   const tr = (x: L10n) => t(x, locale);
   const home = locale === "ar" ? "/" : "/en";
   const other = locale === "ar" ? "/en" : "/";
+  const orderPage = locale === "ar" ? "/order" : "/en/order";
 
   return (
     <div
@@ -41,9 +42,18 @@ export function Landing({ locale }: { locale: Locale }) {
             >
               {tr(c.nav.switchLang)}
             </a>
-            <WhatsAppButton href={orderUrl(locale)} small>
+            <a
+              href={orderUrl(locale)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={tr(c.hero.chat)}
+              className="hidden h-9 w-9 items-center justify-center rounded-full bg-[#1f7a4d] text-white sm:flex"
+            >
+              <WhatsAppIcon size={16} />
+            </a>
+            <OrderButton href={orderPage} small>
               {tr(c.nav.order)}
-            </WhatsAppButton>
+            </OrderButton>
           </div>
         </div>
       </header>
@@ -58,9 +68,10 @@ export function Landing({ locale }: { locale: Locale }) {
               {tr(c.hero.body)}
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center md:justify-start">
-              <WhatsAppButton href={orderUrl(locale)}>{tr(c.hero.cta)}</WhatsAppButton>
+              <OrderButton href={orderPage}>{tr(c.hero.cta)}</OrderButton>
+              <WhatsAppButton href={orderUrl(locale)}>{tr(c.hero.chat)}</WhatsAppButton>
               <a
-                href={`/i/${DEMO_SLUGS["ivory-gold"]}`}
+                href="/demo/noor-ivory-gold"
                 target="_blank"
                 className="f-body rounded-full border border-[var(--line)] px-6 py-3.5 text-[16px]"
               >
@@ -71,7 +82,7 @@ export function Landing({ locale }: { locale: Locale }) {
           </div>
 
           <div className="flex flex-col items-center">
-            <PhoneFrame src={`/i/${DEMO_SLUGS["ivory-gold"]}`} title={tr(c.hero.demo)} />
+            <PhoneFrame src="/demo/noor-ivory-gold" title={tr(c.hero.demo)} />
             <p className="f-body mt-4 text-[14px] text-[var(--ink-soft)]">{tr(c.hero.tryIt)}</p>
           </div>
         </section>
@@ -110,6 +121,35 @@ export function Landing({ locale }: { locale: Locale }) {
           </Suspense>
         </section>
 
+        {/* Two ways to order */}
+        <section id="order" className="reveal mx-auto max-w-5xl scroll-mt-20 px-5 py-16">
+          <SectionTitle>{tr(c.paths.title)}</SectionTitle>
+          <div className="grid gap-5 md:grid-cols-2">
+            <a href={orderPage} className="group relative overflow-hidden rounded-[26px] border border-[var(--accent)] bg-[var(--surface)] p-8 shadow-[0_24px_50px_-34px_rgba(58,46,34,0.6)] transition hover:-translate-y-1">
+              <span className="absolute -end-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent-soft)] blur-2xl transition duration-500 group-hover:scale-125" aria-hidden />
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--bg)]">
+                <Star8 size={20} />
+              </span>
+              <h3 className="f-display relative mt-4 text-[28px]">{tr(c.paths.onlineTitle)}</h3>
+              <p className="f-body relative mt-2 text-[16px] leading-relaxed text-[var(--ink-soft)]">{tr(c.paths.onlineBody)}</p>
+              <span className="f-body relative mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#C9A45C] to-[#A9823C] px-6 py-3 text-[16px] font-semibold text-white">
+                {tr(c.hero.cta)} <span aria-hidden className="rtl:rotate-180">→</span>
+              </span>
+            </a>
+            <a href={orderUrl(locale)} target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden rounded-[26px] border border-[var(--line)] bg-[var(--surface)]/80 p-8 transition hover:-translate-y-1">
+              <span className="absolute -end-12 -top-12 h-40 w-40 rounded-full bg-[#1f7a4d]/10 blur-2xl transition duration-500 group-hover:scale-125" aria-hidden />
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#1f7a4d] text-white">
+                <WhatsAppIcon size={22} />
+              </span>
+              <h3 className="f-display relative mt-4 text-[28px]">{tr(c.paths.chatTitle)}</h3>
+              <p className="f-body relative mt-2 text-[16px] leading-relaxed text-[var(--ink-soft)]">{tr(c.paths.chatBody)}</p>
+              <span className="f-body relative mt-6 inline-flex items-center gap-2 rounded-full bg-[#1f7a4d] px-6 py-3 text-[16px] font-semibold text-white">
+                <WhatsAppIcon size={16} /> {tr(c.hero.chat)}
+              </span>
+            </a>
+          </div>
+        </section>
+
         {/* Pricing */}
         <section id="pricing" className="reveal mx-auto max-w-4xl scroll-mt-20 px-5 py-16">
           <SectionTitle>{tr(c.pricing.title)}</SectionTitle>
@@ -136,7 +176,7 @@ export function Landing({ locale }: { locale: Locale }) {
                 ))}
               </ul>
               <div className="mt-8">
-                <WhatsAppButton href={orderUrl(locale)}>{tr(c.hero.cta)}</WhatsAppButton>
+                <OrderButton href={orderPage}>{tr(c.hero.cta)}</OrderButton>
               </div>
             </div>
             <div className="rounded-[26px] border border-[var(--line)] bg-[var(--surface)]/70 p-8">
@@ -181,8 +221,9 @@ export function Landing({ locale }: { locale: Locale }) {
           <Divider />
           <h2 className="f-display mt-6 text-[38px]">{tr(c.final.title)}</h2>
           <p className="f-body mt-2 text-[18px] text-[var(--ink-soft)]">{tr(c.final.body)}</p>
-          <div className="mt-7">
-            <WhatsAppButton href={orderUrl(locale)}>{tr(c.hero.cta)}</WhatsAppButton>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <OrderButton href={orderPage}>{tr(c.hero.cta)}</OrderButton>
+            <WhatsAppButton href={orderUrl(locale)}>{tr(c.hero.chat)}</WhatsAppButton>
           </div>
         </section>
       </main>
@@ -203,6 +244,28 @@ function SectionTitle({ children, sub }: { children: ReactNode; sub?: string }) 
       <Divider className="mt-3" />
       {sub && <p className="f-body mx-auto mt-4 max-w-xl text-[17px] text-[var(--ink-soft)]">{sub}</p>}
     </div>
+  );
+}
+
+function OrderButton({ href, children, small }: { href: string; children: ReactNode; small?: boolean }) {
+  return (
+    <a
+      href={href}
+      className={`f-body inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#C9A45C] to-[#A9823C] font-semibold text-white shadow-[0_12px_26px_-12px_rgba(169,130,60,0.9)] transition hover:brightness-105 ${
+        small ? "px-4 py-2 text-[14px]" : "px-7 py-3.5 text-[17px]"
+      }`}
+    >
+      {!small && <Star8 size={14} />}
+      {children}
+    </a>
+  );
+}
+
+function WhatsAppIcon({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z" />
+    </svg>
   );
 }
 

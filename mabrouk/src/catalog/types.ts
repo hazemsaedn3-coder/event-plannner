@@ -13,11 +13,11 @@ import { z } from "zod";
 
 const l10n = z.object({ ar: z.string().max(400), en: z.string().max(400) });
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a #RRGGBB color");
-/** A media reference: "/media/<id>" (uploaded) or an absolute https URL. */
+/** A media reference: "/media/<id>" (uploaded), "/demo/…" (bundled sample photos) or an absolute https URL. */
 const assetUrl = z
   .string()
   .max(2000)
-  .refine((s) => s === "" || s.startsWith("/media/") || /^https:\/\//.test(s), "Use an uploaded file or an https URL");
+  .refine((s) => s === "" || s.startsWith("/media/") || /^\/demo\/[a-z0-9-]+\.(webp|jpg|png)$/.test(s) || /^https:\/\//.test(s), "Use an uploaded file or an https URL");
 
 export { BUILTIN_TRACK, BUILTIN_TRACKS } from "./builtin-tracks";
 
@@ -34,6 +34,52 @@ export const colorsSchema = z.object({
   accent: color,
   seal: color,
 });
+
+const l10nLong = z.object({ ar: z.string().max(2000), en: z.string().max(2000) });
+
+/**
+ * Every section an invitation can show. The admin switches them on/off per
+ * template and per invitation; templates hide switched-off sections and
+ * close the gap (no empty spaces).
+ */
+export const FEATURES = [
+  { key: "countdown", label: "Countdown timer" },
+  { key: "couplePhotos", label: "Bride & groom photos" },
+  { key: "music", label: "Background music" },
+  { key: "venue", label: "Date, time & venue card" },
+  { key: "timeline", label: "Event schedule / timeline" },
+  { key: "venueImages", label: "Wedding location images" },
+  { key: "mapsButton", label: "Google Maps & directions buttons" },
+  { key: "gallery", label: "Photo gallery" },
+  { key: "rsvp", label: "RSVP form" },
+  { key: "dressCode", label: "Dress code" },
+  { key: "gifts", label: "Gift information" },
+  { key: "contact", label: "Contact information" },
+  { key: "notes", label: "Additional notes" },
+  { key: "share", label: "Social sharing" },
+  { key: "animations", label: "Animated visual effects" },
+] as const;
+
+export type FeatureKey = (typeof FEATURES)[number]["key"];
+export type Features = Record<FeatureKey, boolean>;
+
+export const featuresSchema = z.object({
+  countdown: z.boolean(),
+  couplePhotos: z.boolean(),
+  music: z.boolean(),
+  venue: z.boolean(),
+  timeline: z.boolean(),
+  venueImages: z.boolean(),
+  mapsButton: z.boolean(),
+  gallery: z.boolean(),
+  rsvp: z.boolean(),
+  dressCode: z.boolean(),
+  gifts: z.boolean(),
+  contact: z.boolean(),
+  notes: z.boolean(),
+  share: z.boolean(),
+  animations: z.boolean(),
+}) satisfies z.ZodType<Features>;
 
 export const noorConfigSchema = z.object({
   baseTheme: z.enum(["ivory-gold", "emerald-night", "blush-rose"]),
@@ -59,6 +105,53 @@ export const noorConfigSchema = z.object({
   dressCode: l10n,
   heroImage: assetUrl,
   gallery: z.array(assetUrl).max(12),
+
+  /* ---- Everything below is optional so designs saved earlier stay valid;
+     resolveNoor() in ./content.ts fills in the defaults. ---- */
+
+  /** Section switches (the "feature manager"). Missing key = on. */
+  features: featuresSchema.partial().optional(),
+  galleryLayout: z.enum(["carousel", "grid", "masonry"]).optional(),
+  /** Couple photos: none, one or many, in the chosen layout. */
+  couple: z
+    .object({
+      images: z.array(assetUrl).max(12),
+      layout: z.enum(["arch", "polaroid", "filmstrip", "mosaic"]),
+    })
+    .optional(),
+  /** Venue showcase: photos/screenshots of the hall, with a short story. */
+  venueShowcase: z
+    .object({
+      images: z.array(assetUrl).max(16),
+      layout: z.enum(["hero", "carousel", "grid"]),
+      title: l10n,
+      story: l10nLong,
+    })
+    .optional(),
+  /** The evening's schedule, e.g. 20:00 guests arrive, 21:00 zaffa. */
+  timeline: z
+    .array(z.object({ time: z.string().regex(/^\d{2}:\d{2}$/), title: l10n, note: l10n }))
+    .max(12)
+    .optional(),
+  gifts: z
+    .object({
+      message: l10nLong,
+      accounts: z.array(z.object({ label: l10n, value: z.string().max(120) })).max(4),
+    })
+    .optional(),
+  contacts: z
+    .array(z.object({ name: l10n, phone: z.string().regex(/^\+?\d{6,16}$|^$/, "Digits only, with country code") }))
+    .max(4)
+    .optional(),
+  notes: z.object({ title: l10n, body: l10nLong }).optional(),
+  rsvpSettings: z
+    .object({
+      /** "YYYY-MM-DD" or "" for no deadline. */
+      deadline: z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/),
+      maxHeadcount: z.number().int().min(1).max(20),
+    })
+    .optional(),
+  countdown: z.object({ title: l10n, showSeconds: z.boolean() }).optional(),
 });
 
 /**

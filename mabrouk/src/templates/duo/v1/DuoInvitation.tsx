@@ -10,9 +10,10 @@ import type { L10n, Locale } from "@/lib/types";
 import type { InvitationView } from "@/lib/view";
 import { LocaleContext, useLocale } from "../../shared/LocaleContext";
 import { createMusicPlayer, type MusicPlayer } from "../../shared/music";
+import "../../shared/still.css";
+import { shows } from "@/lib/view";
+import { InvitationSections } from "../../noor/v1/Body";
 import { DateParts, Dot } from "../../noor/v1/Ornaments";
-import { Rsvp } from "../../noor/v1/Rsvp";
-import { Countdown, Details, Events, Footer } from "../../noor/v1/Sections";
 import { neonText, palette, romanceVars, shaabiVars, type DuoPalette, type DuoStyleId } from "./palettes";
 
 type Side = "bride" | "groom";
@@ -81,6 +82,7 @@ export default function DuoInvitation({ view, duo }: { view: InvitationView; duo
   }, []);
 
   function playFor(s: Side) {
+    if (!shows(view, "music")) return;
     const id = duo[s].trackId;
     if (demoAudio) return demoAudio.playTrack(id);
     ownPlayer.current?.dispose();
@@ -106,8 +108,13 @@ export default function DuoInvitation({ view, duo }: { view: InvitationView; duo
   return (
     <LocaleContext.Provider value={ctx}>
       <LazyMotion features={domAnimation} strict>
-        <MotionConfig reducedMotion="user">
-          <div lang={locale} dir={dirOf(locale)} className="relative min-h-[100svh] overflow-x-clip" style={{ background: p.shaabi.bg2 }}>
+        <MotionConfig reducedMotion={shows(view, "animations") ? "user" : "always"}>
+          <div
+            lang={locale}
+            dir={dirOf(locale)}
+            className={`relative min-h-[100svh] overflow-x-clip ${shows(view, "animations") ? "" : "mbk-still"}`}
+            style={{ background: p.shaabi.bg2 }}
+          >
             <TopBar p={p} side={side} onBack={() => setSide(null)} locale={locale} onToggleLocale={() => setLocale((l) => (l === "ar" ? "en" : "ar"))} />
             <AnimatePresence mode="wait" initial={false}>
               {side === null ? (
@@ -561,12 +568,9 @@ function SplitGate({ view, duo, p, onChoose }: GateProps) {
 function SharedDetails({ view, children }: { view: InvitationView; children: ReactNode }) {
   return (
     <div className="relative">
-      <Countdown startsAt={view.main.startsAt} />
-      <Events view={view} />
-      <Details view={view} />
-      <Rsvp view={view} />
-      {children}
-      <Footer view={view} />
+      <InvitationSections view={view} heroShowsCouplePhoto={false}>
+        {children}
+      </InvitationSections>
       <div className="h-20" />
     </div>
   );
