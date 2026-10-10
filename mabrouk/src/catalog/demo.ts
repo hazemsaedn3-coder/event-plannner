@@ -5,12 +5,14 @@ import { whatsappUrl } from "@/lib/links";
 import type { InvitationView } from "@/lib/view";
 import { CATALOG_TAG, getMediaIndex, getPreviewLink, getPublishedTemplate, resolveTracks, type TrackInfo } from "./read";
 import { buildHtmlDocument, buildNoorDemoView } from "./render";
-import type { LinkOverrides, ShowcaseTemplate } from "./types";
+import type { DuoConfig, LinkOverrides, ShowcaseTemplate } from "./types";
 
 export interface DemoPayload {
   template: Pick<ShowcaseTemplate, "id" | "kind" | "name" | "ctaText" | "colors">;
   locale: "ar" | "en";
   noorView?: InvitationView;
+  /** Two-entrance template: per-side texts and songs. */
+  duo?: DuoConfig;
   htmlDoc?: string;
   tracks: TrackInfo[];
   shareUrl: string;
@@ -29,12 +31,13 @@ export function buildDemoPayload(
   media: Parameters<typeof resolveTracks>[1],
   opts: { path: string; overrides?: LinkOverrides; clientName?: string; now?: Date },
 ): DemoPayload {
-  const locale = t.kind === "noor" ? t.noor!.defaultLocale : "en";
+  const locale = t.kind === "html" ? "en" : t.noor!.defaultLocale;
   const shareUrl = absoluteUrl(opts.path);
   return {
     template: { id: t.id, kind: t.kind, name: t.name, ctaText: t.ctaText, colors: t.colors },
     locale,
-    noorView: t.kind === "noor" ? buildNoorDemoView(t, opts.overrides, opts.now) : undefined,
+    noorView: t.kind === "html" ? undefined : buildNoorDemoView(t, opts.overrides, opts.now),
+    duo: t.kind === "duo" ? t.duo : undefined,
     htmlDoc: t.kind === "html" ? buildHtmlDocument(t, opts.overrides) : undefined,
     tracks: resolveTracks(t, media),
     shareUrl,

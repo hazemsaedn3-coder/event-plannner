@@ -27,6 +27,9 @@ async function Templates() {
           <form action={createTemplate.bind(null, "noor")}>
             <button className="rounded-full bg-[#2A2420] px-4 py-2 text-[14px] text-white hover:bg-black">+ New Noor design</button>
           </form>
+          <form action={createTemplate.bind(null, "duo")}>
+            <button className="rounded-full border border-[#D9C9A8] bg-white px-4 py-2 text-[14px] hover:border-[#B08A45]">+ New bride/groom design</button>
+          </form>
           <form action={createTemplate.bind(null, "html")}>
             <button className="rounded-full border border-[#D9C9A8] bg-white px-4 py-2 text-[14px] hover:border-[#B08A45]">+ New HTML design</button>
           </form>

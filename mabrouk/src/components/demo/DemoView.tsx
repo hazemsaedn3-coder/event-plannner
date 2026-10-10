@@ -1,4 +1,5 @@
 import type { DemoPayload } from "@/catalog/demo";
+import DuoInvitation from "@/templates/duo/v1/DuoInvitation";
 import { resolveTemplate } from "@/templates/registry";
 import { DemoShell } from "./DemoShell";
 
@@ -6,7 +7,7 @@ import { DemoShell } from "./DemoShell";
 export function DemoView({ payload }: { payload: DemoPayload }) {
   const { template, locale } = payload;
   const name = template.name[locale];
-  const Noor = payload.noorView ? resolveTemplate("noor", 1).Component : null;
+  const Noor = payload.noorView && !payload.duo ? resolveTemplate("noor", 1).Component : null;
 
   return (
     <DemoShell
@@ -20,7 +21,9 @@ export function DemoView({ payload }: { payload: DemoPayload }) {
       clientName={payload.clientName}
       autoStartOnTap={template.kind === "noor"}
     >
-      {Noor && payload.noorView ? (
+      {payload.duo && payload.noorView ? (
+        <DuoInvitation view={payload.noorView} duo={payload.duo} />
+      ) : Noor && payload.noorView ? (
         <Noor view={payload.noorView} />
       ) : (
         <iframe

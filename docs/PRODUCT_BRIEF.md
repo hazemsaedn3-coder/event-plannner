@@ -143,3 +143,12 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
 - Public catalog reads are cached and tagged `catalog`; every admin change refreshes them immediately.
 - The default catalog (3 Noor themes + "Lumière" HTML save-the-date) is seeded once on first read.
 - The admin UI is in English; customer-facing pages stay Arabic-first and bilingual.
+
+## 9. "Farah" two-entrance template (added October 2026)
+
+- New template kind **`duo`**: one invitation, two doors. The entrance asks "إنت من طرف مين؟" ("Whose side are you on?"):
+  - **صحاب العروسة يجوا هنا** → a romantic world: blush background, floating hearts and petals, calligraphy names, its own song ("Romantic One").
+  - **صحاب العريس يجوا هنا** → a shaabi street-wedding world: festoon lights, bunting, spinning light rays, confetti, a neon Lalezar title and a scrolling banner, with its own song ("Shaabi One").
+  - Both sides show all the details (countdown, venue + maps + calendar, dress code, RSVP). Guests can switch sides or go back to the entrance; the song switches with them, and the demo's music player follows.
+- Default demo: `/demo/farah-bride-groom`, first in the landing gallery. Duplicate it, or use **+ New bride/groom design** in `/admin`. Each side's entrance label, title, message and song are editable in the "Two entrances" section.
+- The two songs ship with the site as built-in tracks (`public/audio/romantic-one.mp3`, `public/audio/shaabi-one.mp3`, served by the CDN), next to the synthesized music box. They were supplied by the founder, who is responsible for their usage rights.

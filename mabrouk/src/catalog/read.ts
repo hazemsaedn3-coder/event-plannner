@@ -2,7 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { DEFAULT_TEMPLATES } from "./defaults";
 import { getCatalogStore } from "./store";
-import { BUILTIN_TRACK, type MediaMeta, type PreviewLink, type ShowcaseTemplate } from "./types";
+import { BUILTIN_TRACKS, type MediaMeta, type PreviewLink, type ShowcaseTemplate } from "./types";
 
 /** Every public read is tagged "catalog"; admin writes call updateTag("catalog"). */
 export const CATALOG_TAG = "catalog";
@@ -66,7 +66,7 @@ export interface TrackInfo {
 export function resolveTracks(t: ShowcaseTemplate, media: Record<string, MediaMeta>): TrackInfo[] {
   const tracks: TrackInfo[] = [];
   for (const id of t.music.trackIds) {
-    if (id === BUILTIN_TRACK) tracks.push({ id, title: "Mabrouk Music Box" });
+    if (BUILTIN_TRACKS[id]) tracks.push({ id, ...BUILTIN_TRACKS[id] });
     else if (media[id]?.kind === "audio") tracks.push({ id, title: media[id].name, src: `/media/${id}` });
   }
   // Put the default track first.

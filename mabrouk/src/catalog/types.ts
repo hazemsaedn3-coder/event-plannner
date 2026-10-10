@@ -19,7 +19,7 @@ const assetUrl = z
   .max(2000)
   .refine((s) => s === "" || s.startsWith("/media/") || /^https:\/\//.test(s), "Use an uploaded file or an https URL");
 
-export const BUILTIN_TRACK = "builtin:musicbox";
+export { BUILTIN_TRACK, BUILTIN_TRACKS } from "./builtin-tracks";
 
 export const templateIdSchema = z
   .string()
@@ -61,6 +61,32 @@ export const noorConfigSchema = z.object({
   gallery: z.array(assetUrl).max(12),
 });
 
+/**
+ * "duo": one invitation, two entrances. The bride's friends get a romantic
+ * world, the groom's friends a shaabi (Egyptian street-wedding) one; each
+ * side has its own song and texts. Shared details (names, date, venue…)
+ * come from the `noor` config.
+ */
+const duoSideSchema = z.object({
+  /** Gate button, e.g. "صحاب العروسة يجوا هنا". */
+  gateLabel: l10n,
+  /** Big title on the side, e.g. "يا بنات… الليلة ليلتنا". */
+  title: l10n,
+  /** Personal message for that group of friends. */
+  message: l10n,
+  /** Track played when this side is chosen (media id or builtin:*). */
+  trackId: z.string().max(80),
+});
+
+export const duoConfigSchema = z.object({
+  bride: duoSideSchema,
+  groom: duoSideSchema,
+  /** Question shown on the entrance gate. */
+  gateQuestion: l10n,
+});
+
+export type DuoConfig = z.infer<typeof duoConfigSchema>;
+
 export const htmlConfigSchema = z.object({
   html: z.string().max(1_500_000),
   css: z.string().max(500_000),
@@ -71,7 +97,7 @@ export const htmlConfigSchema = z.object({
 
 export const templateSchema = z.object({
   id: templateIdSchema,
-  kind: z.enum(["noor", "html"]),
+  kind: z.enum(["noor", "html", "duo"]),
   status: z.enum(["published", "draft"]),
   sortOrder: z.number().int().min(0).max(9999),
   name: l10n,
@@ -80,6 +106,7 @@ export const templateSchema = z.object({
   colors: colorsSchema,
   noor: noorConfigSchema.optional(),
   html: htmlConfigSchema.optional(),
+  duo: duoConfigSchema.optional(),
   /** `{{key}}` → value, for html templates. */
   variables: z.record(z.string().regex(/^[a-zA-Z0-9_]{1,40}$/), z.string().max(2000)),
   music: z.object({

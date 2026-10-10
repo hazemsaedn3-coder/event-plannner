@@ -23,6 +23,28 @@ export function TemplatePoster({ template, locale, className = "" }: { template:
     );
   }
 
+  if (template.kind === "duo" && template.noor) {
+    const n = template.noor;
+    return (
+      <div lang={locale} className={`${base}`}>
+        <div className="duo-romance absolute inset-0 flex flex-col items-center pt-[14%]" style={{ clipPath: "polygon(0 0,100% 0,100% 44%,0 56%)" }}>
+          <span className="text-[26px]" aria-hidden>👰‍♀️</span>
+          <span className="f-names mt-1 text-[22px] text-[#D4507A]">{locale === "ar" ? "صحاب العروسة" : "Bride's friends"}</span>
+        </div>
+        <div className="duo-shaabi absolute inset-0 flex flex-col items-center justify-end overflow-hidden pb-[14%]" style={{ clipPath: "polygon(0 56%,100% 44%,100% 100%,0 100%)" }}>
+          <div className="duo-rays" aria-hidden />
+          <span className="relative text-[26px]" aria-hidden>🥁</span>
+          <span className="f-names duo-neon relative mt-1 text-[24px]">{locale === "ar" ? "صحاب العريس" : "Groom's friends"}</span>
+        </div>
+        <div className="absolute top-1/2 left-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center ring-4 ring-[#FFD400]">
+          <span className="f-names text-[19px] leading-tight text-[#4A2430]">
+            {n.partner1[locale]} <span className="text-[#D4507A]">♥</span> {n.partner2[locale]}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   const c = template.colors;
   const noor = template.kind === "noor" ? template.noor : undefined;
   const colors = noor?.colorsMode === "preset" ? noorThemes[noor.baseTheme].colors : deriveNoorColors(c);

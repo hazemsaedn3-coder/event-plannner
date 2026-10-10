@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createMusicPlayer, type MusicPlayer } from "@/templates/shared/music";
+import { DemoAudioContext, type DemoAudio } from "./DemoAudio";
 
 export interface DemoTrack {
   id: string;
@@ -83,6 +84,13 @@ export function DemoShell({
   const userPaused = useRef(false);
 
   const track = tracks.find((x) => x.id === trackId) ?? tracks[0];
+  // Refs so the context API stays stable across renders.
+  const trackIdRef = useRef(trackId);
+  const tracksRef = useRef(tracks);
+  useEffect(() => {
+    trackIdRef.current = trackId;
+    tracksRef.current = tracks;
+  });
 
   const play = useCallback(async () => {
     if (!track) return;
@@ -123,14 +131,15 @@ export function DemoShell({
     };
   }, [pause]);
 
-  function selectTrack(id: string) {
+  function selectTrack(id: string, forcePlay = false) {
     const wasPlaying = player.current?.playing;
     player.current?.dispose();
     player.current = null;
     setTrackId(id);
     setPlaying(false);
     const next = tracks.find((x) => x.id === id);
-    if (wasPlaying && next) {
+    if ((wasPlaying || forcePlay) && next) {
+      userPaused.current = false;
       const p = createMusicPlayer(next.src);
       p.setMuted(muted);
       player.current = p;
@@ -140,6 +149,20 @@ export function DemoShell({
       );
     }
   }
+
+  const selectRef = useRef(selectTrack);
+  useEffect(() => {
+    selectRef.current = selectTrack;
+  });
+  const audioApi = useMemo<DemoAudio>(
+    () => ({
+      playTrack: (id) => {
+        if (id === trackIdRef.current && player.current?.playing) return;
+        if (tracksRef.current.some((x) => x.id === id)) selectRef.current(id, true);
+      },
+    }),
+    [],
+  );
 
   function toggleMute() {
     const next = !muted;
@@ -161,7 +184,7 @@ export function DemoShell({
     "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white transition hover:bg-white/15 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
   return (
-    <>
+    <DemoAudioContext.Provider value={audioApi}>
       {children}
 
       {clientName && (
@@ -313,6 +336,6 @@ export function DemoShell({
           )}
         </div>
       </div>
-    </>
+    </DemoAudioContext.Provider>
   );
 }

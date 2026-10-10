@@ -16,7 +16,7 @@ export function slugify(s: string): string {
   );
 }
 
-export function blankTemplate(kind: "noor" | "html", id: string): ShowcaseTemplate {
+export function blankTemplate(kind: "noor" | "html" | "duo", id: string): ShowcaseTemplate {
   const base = DEFAULT_TEMPLATES.find((t) => t.kind === kind)!;
   return {
     ...structuredClone(base),
@@ -38,14 +38,15 @@ export function templateFromJson(raw: unknown, fallbackName: string): ShowcaseTe
     | Partial<ShowcaseTemplate>
     | undefined;
   if (!obj || typeof obj !== "object") throw new Error("JSON must be a template object");
-  const kind = obj.kind === "noor" ? "noor" : "html";
+  const kind = obj.kind === "noor" || obj.kind === "duo" ? obj.kind : "html";
   const blank = blankTemplate(kind, `${slugify(obj.id ?? obj.name?.en ?? fallbackName)}-${newId(3)}`);
   const merged = {
     ...blank,
     ...obj,
     id: blank.id, // always a fresh id: importing never overwrites an existing template
     status: "draft" as const,
-    noor: kind === "noor" ? { ...blank.noor!, ...(obj.noor ?? {}) } : undefined,
+    noor: kind !== "html" ? { ...blank.noor!, ...(obj.noor ?? {}) } : undefined,
+    duo: kind === "duo" ? { ...blank.duo!, ...(obj.duo ?? {}) } : undefined,
     html: kind === "html" ? { ...blank.html!, ...(obj.html ?? {}) } : undefined,
     variables: obj.variables ?? (kind === "html" ? {} : blank.variables),
     music: obj.music ?? { trackIds: [BUILTIN_TRACK], defaultTrackId: BUILTIN_TRACK },

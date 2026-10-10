@@ -124,3 +124,207 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Farah duo template: romantic (bride's friends) & shaabi (groom's)    */
+/* ------------------------------------------------------------------ */
+.duo-romance {
+  --bg: #fce8ee;
+  --bg2: #f4cfda;
+  --surface: #fff7f9;
+  --ink: #4a2430;
+  --ink-soft: #8a5a68;
+  --accent: #d4507a;
+  --accent-soft: rgba(212, 80, 122, 0.12);
+  --line: rgba(212, 80, 122, 0.35);
+  background:
+    radial-gradient(90% 60% at 80% 0%, #ffe3ec 0%, transparent 60%),
+    radial-gradient(80% 60% at 0% 100%, #f9d6e2 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+  color: var(--ink);
+}
+.duo-shaabi {
+  --bg: #1b0b33;
+  --bg2: #0c0419;
+  --surface: #2a1250;
+  --ink: #fff6e0;
+  --ink-soft: #d9c8f2;
+  --accent: #ffd400;
+  --accent-soft: rgba(255, 212, 0, 0.14);
+  --line: rgba(255, 212, 0, 0.42);
+  --f-display: var(--font-lalezar), var(--font-amiri), sans-serif;
+  --f-names: var(--font-lalezar), var(--font-amiri), sans-serif;
+  background:
+    radial-gradient(70% 50% at 50% 0%, #4b1a7a 0%, transparent 70%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+  color: var(--ink);
+}
+.duo-shaabi .f-names {
+  font-weight: 400;
+}
+
+/* Floating hearts / petals (romantic) */
+.duo-heart {
+  position: absolute;
+  bottom: -40px;
+  animation: duo-float-up linear infinite;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+@keyframes duo-float-up {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-55vh) translateX(18px) rotate(12deg) scale(1);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(-14px) rotate(-10deg) scale(1.05);
+    opacity: 0;
+  }
+}
+.duo-petal {
+  position: absolute;
+  top: -30px;
+  width: 14px;
+  height: 18px;
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #ffc2d4, #f08aa8);
+  animation: duo-fall linear infinite;
+  opacity: 0.8;
+}
+@keyframes duo-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(115vh) translateX(60px) rotate(540deg);
+  }
+}
+.duo-bokeh {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(18px);
+  animation: duo-breathe 6s ease-in-out infinite alternate;
+}
+@keyframes duo-breathe {
+  from {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 0.75;
+    transform: scale(1.1);
+  }
+}
+
+/* Shaabi: rays, lights, bunting, confetti, neon, marquee */
+.duo-rays {
+  position: absolute;
+  inset: -50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 212, 0, 0.09) 0deg 8deg, transparent 8deg 22deg);
+  animation: duo-spin 40s linear infinite;
+}
+@keyframes duo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.duo-bulb {
+  animation: duo-blink 1.2s ease-in-out infinite;
+}
+@keyframes duo-blink {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  50% {
+    opacity: 0.35;
+    filter: none;
+  }
+}
+.duo-bunting {
+  transform-origin: top center;
+  animation: duo-swing 2.6s ease-in-out infinite alternate;
+}
+@keyframes duo-swing {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
+.duo-confetti {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  animation: duo-fall linear infinite;
+}
+.duo-neon {
+  color: #ffd400;
+  text-shadow:
+    0 0 6px rgba(255, 212, 0, 0.9),
+    0 0 18px rgba(255, 59, 107, 0.7),
+    0 0 36px rgba(255, 59, 107, 0.5);
+  animation: duo-flicker 3.2s infinite;
+}
+@keyframes duo-flicker {
+  0%,
+  18%,
+  22%,
+  25%,
+  53%,
+  57%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  24%,
+  55% {
+    opacity: 0.55;
+  }
+}
+.duo-marquee {
+  display: flex;
+  width: max-content;
+  animation: duo-marquee 14s linear infinite;
+}
+[dir="rtl"] .duo-marquee {
+  animation-direction: reverse;
+}
+@keyframes duo-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.duo-bounce {
+  display: inline-block;
+  animation: duo-bounce 0.9s ease-in-out infinite alternate;
+}
+@keyframes duo-bounce {
+  to {
+    transform: translateY(-8px) scale(1.08);
+  }
+}
+.duo-pulse {
+  animation: duo-pulse 1.8s ease-in-out infinite;
+}
+@keyframes duo-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}

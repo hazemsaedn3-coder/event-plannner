@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, type ReactNode } from "react";
 import { createLink, deleteLink, deleteTemplate, saveTemplate } from "@/app/(admin)/admin/actions";
-import { BUILTIN_TRACK, type MediaMeta, type PreviewLink, type ShowcaseTemplate, type TemplateColors } from "@/catalog/types";
+import { BUILTIN_TRACKS } from "@/catalog/builtin-tracks";
+import type { DuoConfig, MediaMeta, PreviewLink, ShowcaseTemplate, TemplateColors } from "@/catalog/types";
 import { MediaUploader } from "./MediaUploader";
 
 type L = { ar: string; en: string };
@@ -155,7 +156,12 @@ export function TemplateEditor({ initial, media: initialMedia, links: initialLin
   }
 
   /* ---------------- music ---------------- */
-  const tracks = [{ id: BUILTIN_TRACK, name: "Mabrouk Music Box (built-in, synthesized)" }, ...audio.map((m) => ({ id: m.id, name: m.name }))];
+  const tracks = [
+    ...Object.entries(BUILTIN_TRACKS).map(([id, b]) => ({ id, name: `${b.title} (built-in)` })),
+    ...audio.map((m) => ({ id: m.id, name: m.name })),
+  ];
+  const setDuo = (side: "bride" | "groom", patch: Partial<DuoConfig["bride"]>) =>
+    setT((x) => ({ ...x, duo: { ...x.duo!, [side]: { ...x.duo![side], ...patch } } }));
   function toggleTrack(id: string, on: boolean) {
     const ids = on ? [...new Set([...t.music.trackIds, id])] : t.music.trackIds.filter((x) => x !== id);
     set("music", { trackIds: ids, defaultTrackId: ids.includes(t.music.defaultTrackId) ? t.music.defaultTrackId : ids[0] ?? "" });
@@ -219,7 +225,7 @@ export function TemplateEditor({ initial, media: initialMedia, links: initialLin
           <L10nField label="Order button text (WhatsApp CTA)" value={t.ctaText} onChange={(v) => set("ctaText", v)} />
         </Section>
 
-        <Section title="Colors" hint={t.kind === "html" ? "Exposed to your HTML as --mbk-background, --mbk-surface, --mbk-text, --mbk-accent, --mbk-seal." : undefined}>
+        {t.kind !== "duo" && <Section title="Colors" hint={t.kind === "html" ? "Exposed to your HTML as --mbk-background, --mbk-surface, --mbk-text, --mbk-accent, --mbk-seal." : undefined}>
           {t.kind === "noor" && (
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Base theme">
@@ -249,9 +255,32 @@ export function TemplateEditor({ initial, media: initialMedia, links: initialLin
               <ColorField key={k} label={k[0].toUpperCase() + k.slice(1)} value={t.colors[k]} onChange={(v) => set("colors", { ...t.colors, [k]: v })} />
             ))}
           </div>
-        </Section>
+        </Section>}
 
-        {t.kind === "noor" && t.noor && (
+        {t.kind === "duo" && t.duo && (
+          <Section title="Two entrances" hint="Guests choose a side on the entrance screen. The bride's friends get the romantic world, the groom's friends the shaabi one; both see all the details below.">
+            <L10nField label="Entrance question" value={t.duo.gateQuestion} onChange={(v) => setT((x) => ({ ...x, duo: { ...x.duo!, gateQuestion: v } }))} />
+            {(["bride", "groom"] as const).map((side) => (
+              <div key={side} className={`flex flex-col gap-3 rounded-2xl p-4 ${side === "bride" ? "bg-[#FCE8EE]" : "bg-[#EDE6F7]"}`}>
+                <p className="text-[14px] font-semibold">{side === "bride" ? "💗 Bride's friends — romantic" : "🥁 Groom's friends — shaabi"}</p>
+                <L10nField label="Entrance button" value={t.duo![side].gateLabel} onChange={(v) => setDuo(side, { gateLabel: v })} />
+                <L10nField label="Big title" value={t.duo![side].title} onChange={(v) => setDuo(side, { title: v })} />
+                <L10nField label="Message to this group" value={t.duo![side].message} onChange={(v) => setDuo(side, { message: v })} multiline />
+                <Field label="Song for this side" hint="Also add it under Background music so the music player can switch to it.">
+                  <select className={input} value={t.duo![side].trackId} onChange={(e) => setDuo(side, { trackId: e.target.value })}>
+                    {tracks.map((tr) => (
+                      <option key={tr.id} value={tr.id}>
+                        {tr.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+            ))}
+          </Section>
+        )}
+
+        {t.kind !== "html" && t.noor && (
           <Section title="Invitation text" hint="Sample content shown in the demo. Client links can override the names and date.">
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label="Default language">
@@ -402,7 +431,9 @@ export function TemplateEditor({ initial, media: initialMedia, links: initialLin
                     <input type="checkbox" checked={on} onChange={(e) => toggleTrack(tr.id, e.target.checked)} />
                     <span className="truncate">{tr.name}</span>
                   </label>
-                  {tr.id !== BUILTIN_TRACK && <audio controls preload="none" src={`/media/${tr.id}`} className="h-9 max-w-[220px]" />}
+                  {(BUILTIN_TRACKS[tr.id]?.src || !BUILTIN_TRACKS[tr.id]) && (
+                    <audio controls preload="none" src={BUILTIN_TRACKS[tr.id]?.src ?? `/media/${tr.id}`} className="h-9 max-w-[220px]" />
+                  )}
                   <label className={`flex items-center gap-1 text-[13px] ${on ? "" : "opacity-40"}`}>
                     <input
                       type="radio"
@@ -496,7 +527,7 @@ function ClientLinks({
     setBusy(true);
     setError(null);
     const overrides =
-      template.kind === "noor"
+      template.kind !== "html"
         ? {
             ...(p1.ar || p1.en ? { partner1: { ar: p1.ar || p1.en, en: p1.en || p1.ar }, latin1: p1.en || undefined } : {}),
             ...(p2.ar || p2.en ? { partner2: { ar: p2.ar || p2.en, en: p2.en || p2.ar }, latin2: p2.en || undefined } : {}),
@@ -526,7 +557,7 @@ function ClientLinks({
             <input className={input} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Instagram lead, 12 Oct" />
           </Field>
         </div>
-        {template.kind === "noor" ? (
+        {template.kind !== "html" ? (
           <>
             <L10nField label="Their first name (optional)" value={p1} onChange={setP1} />
             <L10nField label="Their second name (optional)" value={p2} onChange={setP2} />

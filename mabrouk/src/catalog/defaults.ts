@@ -1,4 +1,4 @@
-import { BUILTIN_TRACK, type NoorDemoConfig, type ShowcaseTemplate } from "./types";
+import { BUILTIN_TRACK, type DuoConfig, type NoorDemoConfig, type ShowcaseTemplate } from "./types";
 
 /**
  * Seed catalog, written to storage the first time the catalog is read.
@@ -65,6 +65,28 @@ h1 span{animation:fade 1.6s .4s both}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}`;
+
+export const DEFAULT_DUO: DuoConfig = {
+  gateQuestion: { ar: "إنت من طرف مين؟", en: "Whose side are you on?" },
+  bride: {
+    gateLabel: { ar: "صحاب العروسة يجوا هنا", en: "Bride's friends, this way" },
+    title: { ar: "يا بنات… الليلة ليلتنا", en: "Girls, tonight is our night" },
+    message: {
+      ar: "العروسة مستنياكم تكونوا جنبها في أحلى ليلة في عمرها. تعالوا بأحلى فستان وأحلى ضحكة… ومتنسوش المناديل!",
+      en: "The bride wants you right by her side on the most beautiful night of her life. Bring your best dress, your brightest smile — and tissues!",
+    },
+    trackId: "builtin:romantic-one",
+  },
+  groom: {
+    gateLabel: { ar: "صحاب العريس يجوا هنا", en: "Groom's friends, this way" },
+    title: { ar: "يا رجالة… الفرح فرحنا!", en: "Lads, it's our party!" },
+    message: {
+      ar: "صاحبنا داخل القفص الدهبي، وإحنا اللي هنزفّه! جهزوا نفسكم للرقص والزفة والمهرجانات لحد الصبح.",
+      en: "Our boy is walking into the golden cage — and we're leading the zaffa! Get ready to dance till sunrise.",
+    },
+    trackId: "builtin:shaabi-one",
+  },
+};
 
 export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
   {
@@ -147,5 +169,29 @@ export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
     music,
     ctaText: cta,
     updatedAt: stamp,
+  },
+  {
+    id: "farah-bride-groom",
+    kind: "duo",
+    status: "published",
+    sortOrder: 5,
+    name: { ar: "فرح — صحاب العروسة وصحاب العريس", en: "Farah — Bride's & Groom's Friends" },
+    description: {
+      ar: "دعوة بمدخلين: صحاب العروسة يدخلوا عالم رومانسي، وصحاب العريس يدخلوا فرح شعبي بأغنيته. نفس التفاصيل، روحين مختلفين.",
+      en: "One invitation, two doors: the bride's friends enter a romantic world, the groom's friends a shaabi street-wedding — each with its own song.",
+    },
+    thumbnail: "",
+    colors: { background: "#F7E1E6", surface: "#FFF5F7", text: "#4A2430", accent: "#D4507A", seal: "#FFD400" },
+    noor: {
+      ...baseNoor,
+      opening: { ar: "", en: "" },
+      hostsLine: { ar: "بكل الحب ندعوكم لفرح", en: "With all our love, join us at the wedding of" },
+      inviteLine: { ar: "وجودكم هو اللي هيكمّل فرحتنا", en: "Your being there is what makes it complete" },
+    },
+    duo: DEFAULT_DUO,
+    variables: {},
+    music: { trackIds: ["builtin:romantic-one", "builtin:shaabi-one", BUILTIN_TRACK], defaultTrackId: "builtin:romantic-one" },
+    ctaText: cta,
+    updatedAt: "2026-10-10T00:00:00.000Z",
   },
 ];
