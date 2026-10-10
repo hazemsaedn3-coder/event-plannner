@@ -5,7 +5,7 @@ import type { InvitationView } from "@/lib/view";
 import { resolveNoor } from "./content";
 import { CATALOG_TAG, getMediaIndex, getPreviewLink, getPublishedTemplate, resolveTracks, type TrackInfo } from "./read";
 import { buildHtmlDocument, buildNoorView } from "./render";
-import type { DuoConfig, LinkOverrides, ShowcaseTemplate } from "./types";
+import type { DuoConfig, LayaliConfig, LinkOverrides, ShowcaseTemplate } from "./types";
 
 export interface DemoPayload {
   template: Pick<ShowcaseTemplate, "id" | "kind" | "name" | "ctaText" | "colors">;
@@ -15,6 +15,8 @@ export interface DemoPayload {
   noorView?: InvitationView;
   /** Two-entrance template: per-side texts and songs. */
   duo?: DuoConfig;
+  /** Cinematic template: which look. */
+  layali?: LayaliConfig;
   htmlDoc?: string;
   tracks: TrackInfo[];
   shareUrl: string;
@@ -44,6 +46,7 @@ export function buildDemoPayload(
     noorView:
       t.kind === "html" ? undefined : buildNoorView(t, { overrides: opts.overrides, now: opts.now, live: opts.live, shareUrl }),
     duo: t.kind === "duo" ? t.duo : undefined,
+    layali: t.kind === "layali" ? (t.layali ?? { look: "velvet" }) : undefined,
     htmlDoc: t.kind === "html" ? buildHtmlDocument(t, opts.overrides) : undefined,
     tracks: musicOn ? resolveTracks(t, media) : [],
     shareUrl,

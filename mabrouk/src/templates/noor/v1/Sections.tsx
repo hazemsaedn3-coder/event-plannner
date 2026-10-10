@@ -2,7 +2,7 @@
 
 import { m } from "motion/react";
 import Image from "next/image";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { audienceLabel, ui } from "@/lib/i18n";
 import type { L10n } from "@/lib/types";
 import type { InvitationView, SubEventView } from "@/lib/view";
@@ -431,6 +431,7 @@ export function Gallery({ view, onOpen }: { view: InvitationView; onOpen?: (imag
           ))}
         </div>
       )}
+      {layout === "coverflow" && <Coverflow images={srcs} alts={view.gallery.map((g) => tr(g.alt))} onOpen={(i) => onOpen?.(srcs, i)} />}
       {layout === "masonry" && (
         <div className="mx-auto max-w-[520px] columns-2 gap-2.5 px-5">
           {view.gallery.map((img, i) => (
@@ -441,6 +442,88 @@ export function Gallery({ view, onOpen }: { view: InvitationView; onOpen?: (imag
         </div>
       )}
     </section>
+  );
+}
+
+/** 3D coverflow: the centered photo faces you, neighbours turn away. Swipe or tap. */
+function Coverflow({ images, alts, onOpen }: { images: string[]; alts: string[]; onOpen: (i: number) => void }) {
+  const { tr } = useLocale();
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const mid = el.getBoundingClientRect().left + el.clientWidth / 2;
+      let best = 0;
+      let bestD = Infinity;
+      el.querySelectorAll<HTMLElement>("[data-cf]").forEach((item, i) => {
+        const r = item.getBoundingClientRect();
+        // Untransformed width: the rotation itself must not change the measurement.
+        const d = (r.left + r.width / 2 - mid) / item.offsetWidth; // -1 … 1 per neighbour
+        const c = Math.max(-2, Math.min(2, d));
+        item.style.transform = `perspective(900px) rotateY(${c * -38}deg) scale(${1 - Math.min(Math.abs(c), 1.5) * 0.16})`;
+        item.style.zIndex = String(10 - Math.round(Math.abs(c) * 3));
+        item.style.opacity = String(1 - Math.min(Math.abs(c), 2) * 0.22);
+        if (Math.abs(d) < bestD) {
+          bestD = Math.abs(d);
+          best = i;
+        }
+      });
+      setActive(best);
+    };
+    const onScroll = () => (raf ||= requestAnimationFrame(update));
+    update();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [images]);
+
+  const goTo = (i: number) => {
+    const el = ref.current;
+    const item = el?.querySelectorAll<HTMLElement>("[data-cf]")[i];
+    if (el && item) el.scrollTo({ left: item.offsetLeft - (el.clientWidth - item.clientWidth) / 2, behavior: "smooth" });
+  };
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        className="flex snap-x snap-mandatory gap-0 overflow-x-auto py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ paddingInline: "calc(50% - min(31vw, 140px) + 30px)" }}
+      >
+        {images.map((src, i) => (
+          <button
+            type="button"
+            key={`${src}-${i}`}
+            data-cf
+            onClick={() => (i === active ? onOpen(i) : goTo(i))}
+            aria-label={`${tr(ui.enlarge)} ${i + 1}`}
+            className="relative -mx-[30px] aspect-[3/4] w-[62vw] max-w-[280px] shrink-0 snap-center overflow-hidden rounded-[20px] border border-[var(--line)] shadow-[0_24px_44px_-22px_rgba(0,0,0,0.6)] transition-[opacity] duration-300 will-change-transform"
+          >
+            <Image src={src} alt={alts[i] ?? ""} fill sizes="280px" className="object-cover" loading={i < 3 ? "eager" : "lazy"} unoptimized />
+          </button>
+        ))}
+      </div>
+      <div className="mt-1 flex justify-center gap-1.5">
+        {images.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`${tr(ui.photo)} ${i + 1}`}
+            className={`h-1.5 rounded-full transition-all duration-500 ${i === active ? "w-6 bg-[var(--accent)]" : "w-1.5 bg-[var(--line)]"}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 

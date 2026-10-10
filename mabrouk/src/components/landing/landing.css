@@ -1,0 +1,17 @@
+.hero-float {
+  animation: hero-float 7s ease-in-out infinite;
+}
+@keyframes hero-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-float {
+    animation: none;
+  }
+}

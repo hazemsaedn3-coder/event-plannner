@@ -1,5 +1,6 @@
 import { getPublishedTemplates } from "@/catalog/read";
-import { TemplatePoster } from "@/components/catalog/TemplatePoster";
+import { DeviceCard } from "./DeviceCard";
+import { FilterableGrid } from "./FilterableGrid";
 import { absoluteUrl, siteConfig } from "@/config/site";
 import { whatsappUrl } from "@/lib/links";
 import type { Locale } from "@/lib/types";
@@ -16,17 +17,28 @@ export async function CatalogGallery({ locale }: { locale: Locale }) {
   const templates = await getPublishedTemplates();
   if (!templates.length) return <p className="f-body px-5 text-center text-[var(--ink-soft)]">{c.designs.empty[locale]}</p>;
 
+  const groups = [
+    { id: "layali", label: c.designs.groups.layali[locale] },
+    { id: "duo", label: c.designs.groups.duo[locale] },
+    { id: "noor", label: c.designs.groups.noor[locale] },
+    { id: "html", label: c.designs.groups.html[locale] },
+  ];
+
   return (
-    <ul className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-3">
-      {templates.map((t) => {
+    <FilterableGrid
+      allLabel={c.designs.groups.all[locale]}
+      groups={groups}
+      items={templates.map((t) => {
         const name = t.name[locale];
         const demo = `/demo/${t.id}`;
         const url = absoluteUrl(demo);
-        return (
-          <li key={t.id} className="w-[78vw] max-w-[320px] shrink-0 snap-center md:w-auto md:max-w-none">
+        return {
+          key: t.id,
+          group: t.kind,
+          node: (
             <article className="group flex h-full flex-col">
-              <a href={demo} className="block rounded-[26px] shadow-[0_30px_60px_-35px_rgba(0,0,0,0.5)] transition duration-300 group-hover:-translate-y-1" aria-label={`${c.designs.live[locale]}: ${name}`}>
-                <TemplatePoster template={t} locale={locale} className="border border-[var(--line)]" />
+              <a href={demo} className="block transition duration-300 group-hover:-translate-y-1" aria-label={`${c.designs.live[locale]}: ${name}`}>
+                <DeviceCard template={t} locale={locale} liveLabel={c.designs.live[locale]} />
               </a>
               <h3 className="f-display mt-4 text-[23px] leading-snug">{name}</h3>
               {t.description[locale] && <p className="f-body mt-1 line-clamp-2 text-[15px] text-[var(--ink-soft)]">{t.description[locale]}</p>}
@@ -58,10 +70,10 @@ export async function CatalogGallery({ locale }: { locale: Locale }) {
                 <ShareButton url={url} title={name} label={c.designs.share[locale]} copied={c.designs.copied[locale]} />
               </div>
             </article>
-          </li>
-        );
+          ),
+        };
       })}
-    </ul>
+    />
   );
 }
 

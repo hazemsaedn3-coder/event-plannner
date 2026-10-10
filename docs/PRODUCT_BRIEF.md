@@ -181,3 +181,17 @@ Paymob payments · step-by-step order form with uploads · admin order pipeline 
 **Demo content.** Every demo is a finished sample: 4 couple photos, 6 venue photos, 8 gallery photos, a 6-step schedule, gifts, contacts and notes, with layouts that differ per design. The photos are CC0 (StockSnap) and live in `public/demo` (credits in `public/demo/CREDITS.json`).
 
 **Database.** `supabase/production.sql` holds the `orders`, `order_files` and `live_invitations` tables and their secret-gated functions. Production invitations are mirrored into `invitations` so RSVPs and opens work through the existing tables and the couple's `/host/<slug>?key=` dashboard.
+
+## 11. "Layali" cinematic designs + website upgrade (added October 2026)
+
+Inspired by the animation idea of competitor sites, built from scratch (no copied assets or code).
+
+- **New template kind `layali`** (`src/templates/layali/v1/`): an embossed-paper envelope drawn in SVG (damask, lace, stars or roses), a wax seal with the couple's initials. On tap: the seal cracks into two halves, the flap opens in 3D, the card rises and the camera zooms into the invitation. Music starts on the same tap. The content and sections are shared with Noor.
+- **Four looks:** burgundy velvet, royal gold lace, midnight stars (lanterns), rose garden (falling petals). Demos: `/demo/layali-velvet`, `/demo/layali-royal`, `/demo/layali-midnight`, `/demo/layali-garden`.
+- **Admin:** "+ New cinematic design" button. The editor has a "Cinematic look" picker and a new "3D coverflow" gallery layout.
+- **Demo page:** an auto-scroll button that glides through the invitation. It stops on any touch, wheel or key.
+- **Website:**
+  - designs are shown as phone mockups on their own backdrop, with filter chips
+  - a features grid
+  - a floating WhatsApp button (also on the order pages)
+  - the hero phone plays the velvet design

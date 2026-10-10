@@ -111,7 +111,7 @@ export const noorConfigSchema = z.object({
 
   /** Section switches (the "feature manager"). Missing key = on. */
   features: featuresSchema.partial().optional(),
-  galleryLayout: z.enum(["carousel", "grid", "masonry"]).optional(),
+  galleryLayout: z.enum(["carousel", "grid", "masonry", "coverflow"]).optional(),
   /** Couple photos: none, one or many, in the chosen layout. */
   couple: z
     .object({
@@ -184,6 +184,13 @@ export const duoConfigSchema = z.object({
 
 export type DuoConfig = z.infer<typeof duoConfigSchema>;
 
+/** "layali": cinematic template (embossed 3D envelope + film-like hero). Content comes from `noor`. */
+export const layaliConfigSchema = z.object({
+  look: z.enum(["velvet", "royal", "midnight", "garden"]),
+});
+
+export type LayaliConfig = z.infer<typeof layaliConfigSchema>;
+
 export const htmlConfigSchema = z.object({
   html: z.string().max(1_500_000),
   css: z.string().max(500_000),
@@ -194,7 +201,7 @@ export const htmlConfigSchema = z.object({
 
 export const templateSchema = z.object({
   id: templateIdSchema,
-  kind: z.enum(["noor", "html", "duo"]),
+  kind: z.enum(["noor", "html", "duo", "layali"]),
   status: z.enum(["published", "draft"]),
   sortOrder: z.number().int().min(0).max(9999),
   name: l10n,
@@ -204,6 +211,7 @@ export const templateSchema = z.object({
   noor: noorConfigSchema.optional(),
   html: htmlConfigSchema.optional(),
   duo: duoConfigSchema.optional(),
+  layali: layaliConfigSchema.optional(),
   /** `{{key}}` → value, for html templates. */
   variables: z.record(z.string().regex(/^[a-zA-Z0-9_]{1,40}$/), z.string().max(2000)),
   music: z.object({

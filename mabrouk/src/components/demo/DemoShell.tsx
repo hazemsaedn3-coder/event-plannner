@@ -27,6 +27,8 @@ const T = {
     preparedFor: "معاينة خاصة لـ",
     order: "اطلب",
     chat: "كلّمنا على واتساب",
+    autoScroll: "تمرير تلقائي",
+    stopScroll: "إيقاف التمرير",
   },
   en: {
     play: "Play music",
@@ -44,6 +46,8 @@ const T = {
     preparedFor: "Private preview for",
     order: "Order",
     chat: "Chat with us on WhatsApp",
+    autoScroll: "Auto-scroll",
+    stopScroll: "Stop scrolling",
   },
 };
 
@@ -94,6 +98,7 @@ export function DemoShell({
 
   const track = tracks.find((x) => x.id === trackId) ?? tracks[0];
   // Refs so the context API stays stable across renders.
+  const [autoScroll, setAutoScroll] = useState(false);
   const trackIdRef = useRef(trackId);
   const tracksRef = useRef(tracks);
   useEffect(() => {
@@ -172,6 +177,35 @@ export function DemoShell({
     }),
     [],
   );
+
+  // Auto-scroll: a slow, steady glide through the invitation. Any touch, wheel or key stops it.
+  useEffect(() => {
+    if (!autoScroll) return;
+    let raf = 0;
+    let carry = 0;
+    const step = () => {
+      carry += 0.9;
+      const px = Math.floor(carry);
+      carry -= px;
+      window.scrollBy(0, px);
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) setAutoScroll(false);
+      else raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    const stop = (e: Event) => {
+      if ((e.target as HTMLElement)?.closest?.("[data-demo-dock]")) return;
+      setAutoScroll(false);
+    };
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("touchstart", stop, { passive: true });
+    window.addEventListener("keydown", stop);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("touchstart", stop);
+      window.removeEventListener("keydown", stop);
+    };
+  }, [autoScroll]);
 
   function toggleMute() {
     const next = !muted;
@@ -286,6 +320,19 @@ export function DemoShell({
             </>
           )}
           {tracks.length === 0 && <span className="flex-1" />}
+
+          <button
+            type="button"
+            className={`${iconBtn} ${autoScroll ? "bg-white/15" : ""}`}
+            onClick={() => setAutoScroll((v) => !v)}
+            aria-pressed={autoScroll}
+            aria-label={autoScroll ? t.stopScroll : t.autoScroll}
+            title={autoScroll ? t.stopScroll : t.autoScroll}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+              {autoScroll ? <path d="M8 6v12M16 6v12" /> : <path d="M12 4v13M6.5 11.5L12 17l5.5-5.5M6 20h12" />}
+            </svg>
+          </button>
 
           <button
             type="button"

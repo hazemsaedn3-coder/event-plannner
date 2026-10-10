@@ -4,9 +4,11 @@ import type { ShowcaseTemplate } from "@/catalog/types";
 import { ArchFrame, Divider, Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
 import "@/templates/duo/v1/duo.css";
+import { layaliLook } from "@/templates/layali/v1/looks";
+import { EmbossedPaper, WaxSeal } from "@/templates/layali/v1/Paper";
 import { neonText, palette, romanceVars, shaabiVars } from "@/templates/duo/v1/palettes";
 
-type PosterTemplate = Pick<ShowcaseTemplate, "kind" | "thumbnail" | "colors" | "noor" | "duo" | "variables" | "name">;
+type PosterTemplate = Pick<ShowcaseTemplate, "kind" | "thumbnail" | "colors" | "noor" | "duo" | "variables" | "name"> & Partial<Pick<ShowcaseTemplate, "layali" | "id">>;
 
 /**
  * Preview thumbnail. Uses the uploaded thumbnail when there is one;
@@ -27,6 +29,10 @@ export function TemplatePoster({ template, locale, className = "" }: { template:
 
   if (template.kind === "duo" && template.noor) {
     return <DuoPoster template={template} locale={locale} base={base} />;
+  }
+
+  if (template.kind === "layali" && template.noor) {
+    return <LayaliPoster template={template} locale={locale} base={base} />;
   }
 
   const c = template.colors;
@@ -179,6 +185,31 @@ function DuoPoster({ template, locale, base }: { template: PosterTemplate; local
         <line x1="0" y1="56" x2="100" y2="44" stroke={p.shaabi.accent} strokeWidth="2.5" strokeDasharray="8 6" vectorEffect="non-scaling-stroke" />
       </svg>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{badge(108)}</div>
+    </div>
+  );
+}
+
+/** Cinematic designs: the sealed, embossed envelope itself is the poster. */
+function LayaliPoster({ template, locale, base }: { template: PosterTemplate; locale: "ar" | "en"; base: string }) {
+  const look = layaliLook(template.layali?.look);
+  const n = template.noor!;
+  const uid = `poster-${template.id ?? template.name.en}`.replace(/[^a-zA-Z0-9-]/g, "");
+  const initials = locale === "ar" ? `${n.partner1.ar.replace(/^ال/, "")[0] ?? ""}${n.partner2.ar.replace(/^ال/, "")[0] ?? ""}` : `${n.latin1[0] ?? ""}&${n.latin2[0] ?? ""}`;
+  return (
+    <div className={base} style={{ background: look.lining }}>
+      <EmbossedPaper uid={`${uid}-p`} motif={look.motif} color={look.paper} scale={0.7} />
+      <div className="absolute inset-x-0 top-0 h-[56%]" style={{ clipPath: "polygon(0 0,100% 0,100% 62%,50% 100%,0 62%)", filter: "drop-shadow(0 8px 10px rgba(0,0,0,.45))" }}>
+        <EmbossedPaper uid={`${uid}-f`} motif={look.motif} color={look.flap} scale={0.7} relief={4} />
+      </div>
+      <div className="absolute top-[56%] left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ filter: "drop-shadow(0 6px 8px rgba(0,0,0,.45))" }}>
+        <WaxSeal uid={`${uid}-s`} colors={look.seal} monogram={initials} size={84} />
+      </div>
+      <p className="absolute inset-x-0 top-[72%] text-center text-[26px] leading-tight" style={{ color: look.envelopeInk, fontFamily: locale === "ar" ? "var(--font-aref), serif" : "var(--font-pinyon), serif" }}>
+        {n.partner1[locale]} {locale === "ar" ? "و" : "&"} {n.partner2[locale]}
+      </p>
+      <p className="absolute inset-x-0 top-[84%] text-center text-[12px] tracking-[0.3em]" style={{ color: look.envelopeInk, fontFamily: "var(--font-cormorant), serif" }}>
+        {n.date.slice(0, 10).split("-").reverse().join(" · ")}
+      </p>
     </div>
   );
 }

@@ -62,8 +62,8 @@ async function LiveResolved({ slug }: { slug: string }) {
   return (
     <>
       <DemoView payload={page.payload} />
-      {/* Noor counts the envelope opening itself. */}
-      {kind !== "noor" && <TrackOpen slug={slug} locale={page.payload.locale} />}
+      {/* Noor and Layali count the envelope opening themselves. */}
+      {kind !== "noor" && kind !== "layali" && <TrackOpen slug={slug} locale={page.payload.locale} />}
     </>
   );
 }

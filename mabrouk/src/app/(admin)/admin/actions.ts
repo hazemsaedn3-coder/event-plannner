@@ -46,9 +46,9 @@ export async function logout() {
 /* Templates                                                           */
 /* ------------------------------------------------------------------ */
 
-export async function createTemplate(kind: "noor" | "html" | "duo") {
+export async function createTemplate(kind: "noor" | "html" | "duo" | "layali") {
   await requireAdmin();
-  const t = blankTemplate(kind, `${kind === "html" ? "design" : kind === "duo" ? "farah" : "noor"}-${newId(3)}`);
+  const t = blankTemplate(kind, `${kind === "html" ? "design" : kind === "duo" ? "farah" : kind}-${newId(3)}`);
   await getCatalogStore().saveTemplate(t);
   updateTag(CATALOG_TAG);
   redirect(`/admin/templates/${t.id}`);
@@ -67,6 +67,7 @@ export async function saveTemplate(originalId: string, data: ShowcaseTemplate): 
   const t = parsed.data;
   if (t.kind !== "html" && !t.noor) return { ok: false, error: "Missing invitation content" };
   if (t.kind === "duo" && !t.duo) return { ok: false, error: "Missing bride/groom sides" };
+  if (t.kind === "layali" && !t.layali) return { ok: false, error: "Missing cinematic look" };
   if (t.kind === "html" && !t.html) return { ok: false, error: "Missing HTML content" };
 
   const store = getCatalogStore();

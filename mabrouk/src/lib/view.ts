@@ -86,7 +86,7 @@ export interface InvitationView {
    */
   features?: Partial<Record<FeatureKey, boolean>>;
   couple?: { images: string[]; layout: "arch" | "polaroid" | "filmstrip" | "mosaic" };
-  galleryLayout?: "carousel" | "grid" | "masonry";
+  galleryLayout?: "carousel" | "grid" | "masonry" | "coverflow";
   venueShowcase?: {
     images: string[];
     layout: "hero" | "carousel" | "grid";

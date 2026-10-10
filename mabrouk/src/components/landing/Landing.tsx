@@ -1,9 +1,12 @@
+import "./landing.css";
 import { Suspense, type CSSProperties, type ReactNode } from "react";
 import { t } from "@/lib/i18n";
 import type { L10n, Locale } from "@/lib/types";
 import { Divider, Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
+import { EmbossedPaper, WaxSeal } from "@/templates/layali/v1/Paper";
 import { CatalogGallery, GallerySkeleton } from "./CatalogGallery";
+import { FloatingWhatsApp } from "./FloatingWhatsApp";
 import { copy, orderUrl } from "./copy";
 
 /** The marketing site. Server-rendered and fully static; the only JS on the page is the iframe. */
@@ -81,9 +84,16 @@ export function Landing({ locale }: { locale: Locale }) {
             <p className="f-body mt-4 text-[15px] text-[var(--accent)]">{tr(c.hero.from)}</p>
           </div>
 
-          <div className="flex flex-col items-center">
-            <PhoneFrame src="/demo/noor-ivory-gold" title={tr(c.hero.demo)} />
-            <p className="f-body mt-4 text-[14px] text-[var(--ink-soft)]">{tr(c.hero.tryIt)}</p>
+          <div className="relative flex flex-col items-center">
+            {/* A sealed envelope floating beside the live invitation */}
+            <div className="hero-float pointer-events-none absolute top-[14%] -start-2 z-0 hidden w-[190px] rotate-[-10deg] sm:block md:-start-10" aria-hidden>
+              <MiniEnvelope />
+            </div>
+            <div className="absolute inset-x-6 top-[20%] bottom-[10%] -z-0 rounded-full blur-3xl" style={{ background: "radial-gradient(closest-side, rgba(201,164,92,0.45), transparent)" }} aria-hidden />
+            <div className="relative z-10">
+              <PhoneFrame src="/demo/layali-velvet" title={tr(c.hero.demo)} />
+            </div>
+            <p className="f-body relative z-10 mt-4 text-[14px] text-[var(--ink-soft)]">{tr(c.hero.tryIt)}</p>
           </div>
         </section>
 
@@ -101,14 +111,20 @@ export function Landing({ locale }: { locale: Locale }) {
               </li>
             ))}
           </ol>
-          <ul className="f-body mx-auto mt-10 grid max-w-4xl gap-x-8 gap-y-3 text-[16px] sm:grid-cols-2 md:grid-cols-3">
-            {c.features.map((f, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <Star8 size={12} className="mt-1.5 shrink-0 text-[var(--accent)]" />
-                {tr(f)}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-16">
+            <h3 className="f-display mb-8 text-center text-[30px] leading-tight">{tr(c.featureGrid.title)}</h3>
+            <ul className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-3">
+              {c.featureGrid.items.map((f, i) => (
+                <li key={i} className="group rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-5 text-center transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-28px_rgba(58,46,34,0.6)]">
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)] transition group-hover:scale-110">
+                    <FeatureIcon name={f.icon} />
+                  </span>
+                  <p className="f-display mt-3 text-[19px] leading-snug">{tr(f.t)}</p>
+                  <p className="f-body mt-1 text-[14px] leading-relaxed text-[var(--ink-soft)]">{tr(f.d)}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
 
         {/* Designs (live catalog, managed in /admin) */}
@@ -228,7 +244,9 @@ export function Landing({ locale }: { locale: Locale }) {
         </section>
       </main>
 
-      <footer className="relative border-t border-[var(--line)] px-5 py-8 text-center">
+      <FloatingWhatsApp href={orderUrl(locale)} label={tr(c.hero.chat)} />
+
+      <footer className="relative border-t border-[var(--line)] px-5 py-8 pb-24 text-center">
         <p className="f-body text-[14px] text-[var(--ink-soft)]">
           © {/* static year keeps the page fully prerendered */}2026 {tr(c.footer.rights)}
         </p>
@@ -310,4 +328,93 @@ function PhoneFrame({ src, title }: { src: string; title: string }) {
       </div>
     </div>
   );
+}
+
+/** A small sealed Layali envelope, used as decoration next to the hero phone. */
+function MiniEnvelope() {
+  return (
+    <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] shadow-[0_30px_50px_-20px_rgba(58,30,20,0.6)]">
+      <EmbossedPaper uid="hero-env" motif="lace" color="#C6A15A" scale={0.55} />
+      <div className="absolute inset-x-0 top-0 h-[62%]" style={{ clipPath: "polygon(0 0,100% 0,50% 100%)", filter: "drop-shadow(0 6px 8px rgba(0,0,0,.35))" }}>
+        <EmbossedPaper uid="hero-env-f" motif="lace" color="#CFAB63" scale={0.55} relief={4} />
+      </div>
+      <div className="absolute top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ filter: "drop-shadow(0 5px 6px rgba(0,0,0,.4))" }}>
+        <WaxSeal uid="hero-env-s" colors={["#F3B6BE", "#9E2A3E", "#5A1020"]} monogram="م" size={58} />
+      </div>
+    </div>
+  );
+}
+
+function FeatureIcon({ name }: { name: string }) {
+  const p = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  switch (name) {
+    case "envelope":
+      return (
+        <svg {...p}>
+          <rect x="3" y="6" width="18" height="13" rx="2" />
+          <path d="M3 7l9 6 9-6" />
+          <circle cx="12" cy="13" r="2" fill="currentColor" />
+        </svg>
+      );
+    case "clock":
+      return (
+        <svg {...p}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 7.5V12l3 2" />
+        </svg>
+      );
+    case "pin":
+      return (
+        <svg {...p}>
+          <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+          <circle cx="12" cy="9.5" r="2.5" />
+        </svg>
+      );
+    case "photos":
+      return (
+        <svg {...p}>
+          <rect x="3" y="5" width="14" height="14" rx="2" />
+          <path d="M7 19V9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8" />
+          <path d="M3 15l4-4 4 4 3-3 3 3" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg {...p}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M8 12.5l2.7 2.7L16.5 9" />
+        </svg>
+      );
+    case "music":
+      return (
+        <svg {...p}>
+          <path d="M9 18V5l11-2v13" />
+          <circle cx="6.5" cy="18" r="2.5" />
+          <circle cx="17.5" cy="16" r="2.5" />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg {...p}>
+          <rect x="3.5" y="5" width="17" height="15" rx="2" />
+          <path d="M3.5 10h17M8 3v4M16 3v4M8 14h3M8 17h6" />
+        </svg>
+      );
+    case "share":
+      return (
+        <svg {...p}>
+          <circle cx="18" cy="5.5" r="2.5" />
+          <circle cx="6" cy="12" r="2.5" />
+          <circle cx="18" cy="18.5" r="2.5" />
+          <path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...p}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z" />
+        </svg>
+      );
+  }
 }

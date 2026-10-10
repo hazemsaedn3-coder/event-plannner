@@ -2,6 +2,7 @@ import type { DemoPayload } from "@/catalog/demo";
 import { siteConfig } from "@/config/site";
 import { whatsappUrl } from "@/lib/links";
 import DuoInvitation from "@/templates/duo/v1/DuoInvitation";
+import LayaliInvitation from "@/templates/layali/v1/Layali";
 import { resolveTemplate } from "@/templates/registry";
 import { DemoShell } from "./DemoShell";
 
@@ -9,7 +10,7 @@ import { DemoShell } from "./DemoShell";
 export function DemoView({ payload }: { payload: DemoPayload }) {
   const { template, locale } = payload;
   const name = template.name[locale];
-  const Noor = payload.noorView && !payload.duo ? resolveTemplate("noor", 1).Component : null;
+  const Noor = payload.noorView && !payload.duo && !payload.layali ? resolveTemplate("noor", 1).Component : null;
 
   return (
     <DemoShell
@@ -21,14 +22,16 @@ export function DemoView({ payload }: { payload: DemoPayload }) {
       galleryHref={locale === "ar" ? "/#designs" : "/en#designs"}
       locale={locale}
       clientName={payload.clientName}
-      autoStartOnTap={template.kind === "noor"}
+      autoStartOnTap={template.kind === "noor" || template.kind === "layali"}
       mode={payload.mode}
       whatsappUrl={whatsappUrl(
         locale === "ar" ? `مرحباً مبروك 👋\nأريد هذا التصميم: «${name}»\n${payload.shareUrl}` : `Hi Mabrouk 👋\nI'd like this design: “${name}”\n${payload.shareUrl}`,
         siteConfig.whatsappNumber,
       )}
     >
-      {payload.duo && payload.noorView ? (
+      {payload.layali && payload.noorView ? (
+        <LayaliInvitation view={payload.noorView} look={payload.layali.look} />
+      ) : payload.duo && payload.noorView ? (
         <DuoInvitation view={payload.noorView} duo={payload.duo} />
       ) : Noor && payload.noorView ? (
         <Noor view={payload.noorView} />

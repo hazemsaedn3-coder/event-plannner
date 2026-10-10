@@ -110,7 +110,28 @@ export function ContentEditor({
         </Section>
       )}
 
-      {t.kind !== "duo" && (
+      {t.kind === "layali" && (
+        <Section title="Cinematic look" hint="Embossed paper, seal, particles and page colors. The envelope opens in 3D, the seal carries the couple's initials.">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(
+              [
+                ["velvet", "Burgundy velvet damask · gold dust", "#45111B"],
+                ["royal", "Royal gold lace · gold dust", "#C6A15A"],
+                ["midnight", "Midnight stars · lanterns", "#121E38"],
+                ["garden", "Rose garden · falling petals", "#ECD0CB"],
+              ] as const
+            ).map(([id, label, swatch]) => (
+              <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 ${t.layali?.look === id ? "border-[#B08A45] bg-[#FBF6EA]" : "border-[#EFE6D4]"}`}>
+                <input type="radio" name="layali-look" checked={t.layali?.look === id} onChange={() => setT((x) => ({ ...x, layali: { look: id } }))} />
+                <span className="h-8 w-8 shrink-0 rounded-full ring-2 ring-white" style={{ background: swatch, boxShadow: "0 0 0 1px #E1D5BE" }} />
+                <span className="text-[14px]">{label}</span>
+              </label>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {(t.kind === "noor" || t.kind === "html") && (
         <Section title="Colors" hint={t.kind === "html" ? "Exposed to your HTML as --mbk-background, --mbk-surface, --mbk-text, --mbk-accent, --mbk-seal." : undefined}>
           {t.kind === "noor" && n && (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -319,6 +340,7 @@ export function ContentEditor({
               <option value="carousel">Arched carousel</option>
               <option value="grid">Square grid</option>
               <option value="masonry">Masonry</option>
+              <option value="coverflow">3D coverflow</option>
             </select>
           </Field>
           <PhotoList label="Gallery photos" value={n.gallery} onChange={(fn) => patchNoor("gallery", fn)} images={images} onUploaded={addMedia} />

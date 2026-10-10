@@ -163,7 +163,120 @@ export const DEFAULT_DUO: DuoConfig = {
   },
 };
 
+/** Cinematic (Layali) demos: own couple, hero photo first, coverflow gallery. */
+function layali(o: {
+  id: string;
+  look: NonNullable<ShowcaseTemplate["layali"]>["look"];
+  sortOrder: number;
+  name: { ar: string; en: string };
+  description: { ar: string; en: string };
+  colors: ShowcaseTemplate["colors"];
+  p1: { ar: string; en: string };
+  p2: { ar: string; en: string };
+  date: string;
+  couple: string[];
+  venue: { ar: string; en: string };
+  track: string;
+}): ShowcaseTemplate {
+  return {
+    id: o.id,
+    kind: "layali",
+    status: "published",
+    sortOrder: o.sortOrder,
+    name: o.name,
+    description: o.description,
+    thumbnail: "",
+    colors: o.colors,
+    noor: {
+      ...baseNoor,
+      ...demo({ couple: "filmstrip", venue: "hero", gallery: "coverflow" }),
+      couple: { images: o.couple.map(P), layout: "filmstrip" },
+      partner1: o.p1,
+      partner2: o.p2,
+      latin1: o.p1.en,
+      latin2: o.p2.en,
+      date: o.date,
+      venueName: o.venue,
+      hostsLine: { ar: "بقلوب يملؤها الفرح، ندعوكم لمشاركتنا ليلة العمر", en: "With hearts full of joy, we invite you to the night of our lives" },
+      inviteLine: { ar: "وجودكم يكمّل فرحتنا", en: "Your presence completes our joy" },
+    },
+    layali: { look: o.look },
+    variables: {},
+    music: { trackIds: [o.track, "builtin:romantic-one", BUILTIN_TRACK].filter((v, i, a) => a.indexOf(v) === i), defaultTrackId: o.track },
+    ctaText: cta,
+    updatedAt: "2026-10-10T00:00:00.000Z",
+  };
+}
+
 export const DEFAULT_TEMPLATES: ShowcaseTemplate[] = [
+  layali({
+    id: "layali-velvet",
+    look: "velvet",
+    sortOrder: 1,
+    name: { ar: "ليالي — مخمل عنابي", en: "Layali — Burgundy Velvet" },
+    description: {
+      ar: "ظرف مخمل عنابي بنقش دمشقي بارز وختم ذهبي بحروفكم. يتكسر الختم، يتفتح الظرف وتطلع الكارت قدامك.",
+      en: "A burgundy velvet envelope with embossed damask and a gold seal bearing your initials. The seal cracks, the flap opens, the card rises.",
+    },
+    colors: { background: "#2A0A11", surface: "#3A0F18", text: "#F6EAD3", accent: "#D9B865", seal: "#C9A24A" },
+    p1: { ar: "يوسف", en: "Youssef" },
+    p2: { ar: "مريم", en: "Mariam" },
+    date: "2027-04-22T20:00",
+    couple: ["couple-glance", "couple-forest", "couple-walk", "couple-bouquet"],
+    venue: { ar: "فندق ماريوت القاهرة", en: "Cairo Marriott Hotel" },
+    track: "builtin:romantic-one",
+  }),
+  layali({
+    id: "layali-royal",
+    look: "royal",
+    sortOrder: 2,
+    name: { ar: "ليالي — دانتيل ملكي", en: "Layali — Royal Gold Lace" },
+    description: {
+      ar: "ورق دهبي بدانتيل بارز كأنه مطرّز، وختم شمع ملكي. فخامة كلاسيكية بحركة سينمائية.",
+      en: "Gold paper with raised lace like embroidery and a royal wax seal. Classic luxury, cinematic motion.",
+    },
+    colors: { background: "#FBF4E4", surface: "#FFFCF4", text: "#3E2E12", accent: "#A9823A", seal: "#D7B05A" },
+    p1: { ar: "أحمد", en: "Ahmed" },
+    p2: { ar: "سارة", en: "Sara" },
+    date: "2027-07-07T19:30",
+    couple: ["couple-walk", "couple-glance", "couple-field", "couple-forest"],
+    venue: { ar: "قصر البارون — مصر الجديدة", en: "Baron Palace, Heliopolis" },
+    track: "builtin:romantic-one",
+  }),
+  layali({
+    id: "layali-midnight",
+    look: "midnight",
+    sortOrder: 3,
+    name: { ar: "ليالي — ليل ونجوم", en: "Layali — Midnight Stars" },
+    description: {
+      ar: "كحلي ليلي بنقش نجوم إسلامية بارز وفوانيس بتنور ببطء. مثالي لحفلات الليل وكتب الكتاب.",
+      en: "Midnight navy with embossed Islamic stars and slowly glowing lanterns. Perfect for evening weddings and katb el-kitab.",
+    },
+    colors: { background: "#0D1630", surface: "#16234A", text: "#F3ECDA", accent: "#E2C277", seal: "#C9A24A" },
+    p1: { ar: "كريم", en: "Karim" },
+    p2: { ar: "نور", en: "Nour" },
+    date: "2027-03-12T21:00",
+    couple: ["couple-sunset", "couple-walk", "couple-glance", "couple-field"],
+    venue: { ar: "الفور سيزونز — نايل بلازا", en: "Four Seasons Nile Plaza" },
+    track: "builtin:romantic-one",
+  }),
+  layali({
+    id: "layali-garden",
+    look: "garden",
+    sortOrder: 4,
+    name: { ar: "ليالي — حديقة الورد", en: "Layali — Rose Garden" },
+    description: {
+      ar: "ورق وردي بورود بارزة، ختم شمع أحمر، وورد بيتساقط على صوركم. رومانسي وناعم.",
+      en: "Blush paper with raised roses, a red wax seal and petals falling over your photos. Soft and romantic.",
+    },
+    colors: { background: "#FBF0EE", surface: "#FFFAF9", text: "#4E2530", accent: "#B4606E", seal: "#A8344A" },
+    p1: { ar: "عمر", en: "Omar" },
+    p2: { ar: "ليلى", en: "Laila" },
+    date: "2027-05-14T18:30",
+    couple: ["couple-field", "couple-bouquet", "couple-forest", "couple-glance"],
+    venue: { ar: "حديقة الأزهر", en: "Al-Azhar Park" },
+    track: "builtin:romantic-one",
+  }),
   {
     id: "noor-ivory-gold",
     kind: "noor",

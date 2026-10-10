@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { whatsappUrl } from "@/lib/links";
 import { Star8 } from "@/templates/noor/v1/Ornaments";
 import { noorThemes, themeStyle } from "@/templates/noor/v1/themes";
+import { FloatingWhatsApp } from "@/components/landing/FloatingWhatsApp";
 import { OT } from "./copy";
 import { OrderFlow, WhatsIcon } from "./OrderFlow";
 
@@ -45,6 +46,7 @@ export function OrderShell({ locale, children, switchHref }: { locale: "ar" | "e
         </div>
       </header>
       <main className="relative">{children}</main>
+      <FloatingWhatsApp href={chatUrl(locale)} label={OT[locale].chatCta} />
     </div>
   );
 }

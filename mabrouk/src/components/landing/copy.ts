@@ -95,6 +95,20 @@ export function copy(l: Locale) {
       { ar: "حفلات منفصلة للرجال والنساء", en: "Separate men's & women's events" },
       { ar: "رمز سري يمنع فتح الرابط المُعاد توجيهه", en: "Optional PIN so forwarded links stay private" },
     ] satisfies L10n[],
+    featureGrid: {
+      title: { ar: "كل اللي ضيوفكم محتاجينه… في رابط واحد", en: "Everything your guests need, in one link" },
+      items: [
+        { icon: "envelope", t: { ar: "افتتاحية سينمائية", en: "Cinematic opening" }, d: { ar: "ظرف ثلاثي الأبعاد بختم باسمكم", en: "A 3D envelope with your own seal" } },
+        { icon: "clock", t: { ar: "عدّ تنازلي", en: "Countdown" }, d: { ar: "لحظة بلحظة لحد يوم الفرح", en: "Every second to the big day" } },
+        { icon: "pin", t: { ar: "خرائط واتجاهات", en: "Maps & directions" }, d: { ar: "زرار واحد يوصّل للقاعة", en: "One tap to the venue" } },
+        { icon: "photos", t: { ar: "صوركم وصور القاعة", en: "Your photos & venue" }, d: { ar: "معرض ثلاثي الأبعاد وتكبير", en: "3D gallery with zoom" } },
+        { icon: "check", t: { ar: "تأكيد الحضور", en: "RSVP" }, d: { ar: "ولوحة متابعة خاصة بكم", en: "With your private dashboard" } },
+        { icon: "music", t: { ar: "موسيقى خلفية", en: "Background music" }, d: { ar: "رومانسي، شعبي أو أغنيتكم", en: "Romantic, shaabi or your song" } },
+        { icon: "calendar", t: { ar: "برنامج الليلة", en: "Schedule" }, d: { ar: "الزفة، العشاء، التورتة…", en: "Zaffa, dinner, cake…" } },
+        { icon: "share", t: { ar: "مشاركة بضغطة", en: "One-tap sharing" }, d: { ar: "واتساب وفيسبوك وأكتر", en: "WhatsApp, Facebook & more" } },
+        { icon: "globe", t: { ar: "عربي وإنجليزي", en: "Arabic & English" }, d: { ar: "تبديل اللغة بضغطة", en: "Switch language in one tap" } },
+      ] as { icon: string; t: L10n; d: L10n }[],
+    },
     designs: {
       title: { ar: "التصاميم", en: "Designs" },
       body: {
@@ -107,6 +121,13 @@ export function copy(l: Locale) {
       empty: { ar: "تصاميم جديدة قريباً", en: "New designs coming soon" },
       order: { ar: "اطلب هذا التصميم", en: "Order this design" },
       chat: { ar: "اسأل على واتساب", en: "Ask on WhatsApp" },
+      groups: {
+        all: { ar: "الكل", en: "All" },
+        layali: { ar: "سينمائي", en: "Cinematic" },
+        duo: { ar: "صحاب العروسة والعريس", en: "Two entrances" },
+        noor: { ar: "كلاسيك", en: "Classic" },
+        html: { ar: "بطاقات", en: "Cards" },
+      },
       templateName: { ar: "نور", en: "Noor" },
     },
     pricing: {
