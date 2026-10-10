@@ -350,8 +350,8 @@ export function OrderFlow({
                           <legend className="f-display mb-3 text-[24px]">{t.contact}</legend>
                           <label className="flex flex-col gap-1.5 sm:col-span-2">
                             {label(t.whatsapp, true)}
-                            <div className="flex gap-2" dir="ltr">
-                              <select className={`${field} w-[118px] shrink-0 px-2`} value={d.cc} onChange={(e) => set("cc", e.target.value)} aria-label="Country code">
+                            <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-2" dir="ltr">
+                              <select className={`${field.replace("w-full", "")} w-[112px] px-2 text-[15px]`} value={d.cc} onChange={(e) => set("cc", e.target.value)} aria-label="Country code">
                                 {COUNTRY_CODES.map((c) => (
                                   <option key={c.code} value={c.code}>
                                     {c.label}
@@ -359,7 +359,7 @@ export function OrderFlow({
                                 ))}
                               </select>
                               <input
-                                className={`${field} min-w-0 flex-1 ${bad(!phoneOk)}`}
+                                className={`${field} min-w-0 text-left ${bad(!phoneOk)}`}
                                 inputMode="tel"
                                 autoComplete="tel-national"
                                 placeholder="10 1234 5678"
